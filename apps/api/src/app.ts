@@ -57,7 +57,7 @@ export default class App {
       res.send(`Hello, Purwadhika Student !`);
     });
 
-    this.app.use('/samples', sampleRouter.getRouter());
+    this.app.use('/user', sampleRouter.getRouter());
   }
 
   public start(): void {
