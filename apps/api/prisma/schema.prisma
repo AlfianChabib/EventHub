@@ -12,9 +12,83 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String
-  email    String @unique
-  password String
-  referral String @unique
+  id          Int           @id @default(autoincrement())
+  name        String
+  username    String
+  email       String        @unique
+  password    String
+  referral    String        @unique
+  phone       String
+  image       String
+  role        String
+  point       Point[]
+  Event       Event[]
+  Tickets     Ticket[]
+  voucher     Voucher[]
+  transaction Transaction[]
+}
+
+model Ticket {
+  id     Int   @id @default(autoincrement())
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+model Point {
+  id         Int      @id @default(autoincrement())
+  expireDate DateTime
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+}
+
+model Event {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  category    String
+  location    String
+  image       String
+  price       Float
+  seats       Int
+  event_date  DateTime
+  created_at  DateTime      @default(now())
+  updatet_at  DateTime      @updatedAt
+  rating      Rating[]
+  review      Review[]
+  transaction Transaction[]
+  isPresale   Boolean
+  expireDate  DateTime?
+  discount    Float?
+  isPercent   Boolean?
+  userId      Int?
+  User        User?         @relation(fields: [userId], references: [id])
+}
+
+model Rating {
+  id      Int    @id @default(autoincrement())
+  Event   Event? @relation(fields: [eventId], references: [id])
+  eventId Int?
+}
+
+model Review {
+  id      Int    @id @default(autoincrement())
+  Event   Event? @relation(fields: [eventId], references: [id])
+  eventId Int?
+}
+
+model Voucher {
+  id         Int      @id @default(autoincrement())
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+  expireDate DateTime
+}
+
+model Transaction {
+  id              Int      @id @default(autoincrement())
+  transactionDate DateTime @default(now())
+  totalAmount     Float
+  user            User?    @relation(fields: [userId], references: [id])
+  userId          Int?
+  Event           Event?   @relation(fields: [eventId], references: [id])
+  eventId         Int?
 }
