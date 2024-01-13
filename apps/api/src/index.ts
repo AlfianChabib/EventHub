@@ -1,10 +1,16 @@
-import App from './app';
+import express, { json, urlencoded } from 'express';
+import cors from 'cors';
+import apiRouter from './common/router/api.router';
+import { PORT } from './config';
 
-const main = () => {
-  // init db here
+const app = express();
 
-  const app = new App();
-  app.start();
-};
+app.use(cors());
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
-main();
+app.use('/api', apiRouter);
+
+app.listen(PORT, () => {
+  console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
+});
