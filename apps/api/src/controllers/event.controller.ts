@@ -9,11 +9,7 @@ export interface createEventPayload {
   image: string;
   price: number;
   seats: number;
-  eventDate: string;
-  isPresale: boolean;
-  expireDate?: Date;
-  discount?: number;
-  isPercent?: boolean;
+  eventDate: Date;
 }
 
 export const createEvent = async (
@@ -33,10 +29,6 @@ export const createEvent = async (
       price,
       seats,
       eventDate,
-      isPresale,
-      expireDate,
-      discount,
-      isPercent,
     }: createEventPayload = req.body;
 
     const parsedId = parseInt(id);
@@ -47,21 +39,23 @@ export const createEvent = async (
       });
     }
 
-    const transactionEvent = await prisma.$transaction(async (prisma) => {
-      const userWithId = await prisma.user.findUnique({
-        where: {
-          id: parsedId,
-        },
+    const date = new Date(eventDate);
+
+    const userWithId = await prisma.user.findUnique({
+      where: {
+        id: parsedId,
+      },
+    });
+
+    if (!userWithId) {
+      return res.status(404).json({
+        code: 404,
+        message: 'User not found',
       });
+    }
 
-      if (!userWithId) {
-        return res.status(404).json({
-          code: 404,
-          message: 'User not found',
-        });
-      }
-
-      const updateUser = await prisma.user.update({
+    const transactionEvent = await prisma.$transaction(async (prisma) => {
+      const user = await prisma.user.update({
         where: {
           id: userWithId.id,
         },
@@ -70,8 +64,9 @@ export const createEvent = async (
         },
       });
 
-      const event = await prisma.event.create({
+      await prisma.event.create({
         data: {
+          userId: user.id,
           title,
           description,
           location,
@@ -79,21 +74,29 @@ export const createEvent = async (
           image,
           price,
           seats,
-          event_date: eventDate,
-          isPresale,
-          expireDate,
-          discount,
-          isPercent,
+          event_date: date,
         },
       });
-      
-      res.status(201).json({
-        code: 201,
-        success: true,
-        message: 'Event created successfully',
-        data: event,
-      });
     });
+
+    return res.status(201).json({
+      code: 201,
+      success: true,
+      message: `Create event ${title} has been successfully`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    return res.status(200).json({ id });
   } catch (error) {
     next(error);
   }

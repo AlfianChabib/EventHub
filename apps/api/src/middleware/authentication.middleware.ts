@@ -38,7 +38,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   // req.authToken = authToken;
   // req.cookie = cookieToken;
 
-  req.body = { id, username, email, isAdmin, authToken };
+  req.body = { id, username, email, isAdmin, authToken, ...req.body };
 
   next();
 };
