@@ -55,7 +55,7 @@ export const signinUser = async (
     res.status(200).cookie('api-token', jwtToken, {
       secure: false,
       httpOnly: true,
-      expires: dayjs().add(1, 'day').toDate(),
+      expires: dayjs().add(7, 'days').toDate(),
     });
 
     return res.status(200).json({

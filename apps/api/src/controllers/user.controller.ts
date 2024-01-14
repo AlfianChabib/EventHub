@@ -56,7 +56,7 @@ export const updateUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, cookieToken } = req.body;
+    const { id, authToken } = req.body;
 
     const parsedId = parseInt(id);
     const { name, username, image, phone }: updatePayload = req.body;
@@ -99,7 +99,7 @@ export const updateUser = async (
       code: 200,
       success: true,
       message: `User with id ${id} updated successfully`,
-      data: { userUpdate, cookieToken },
+      data: userUpdate,
     });
   } catch (error) {
     next(error);
