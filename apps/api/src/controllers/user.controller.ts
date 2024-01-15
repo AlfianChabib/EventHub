@@ -39,11 +39,16 @@ export const getUserId = async (
       });
     }
 
+    const { password } = user;
+
     return res.status(200).json({
       code: 200,
       success: true,
       message: `User data with id ${id} fetched successfully`,
-      data: user,
+      data: {
+        ...user,
+        password: null,
+      },
     });
   } catch (error) {
     next(error);
@@ -56,22 +61,13 @@ export const updateUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, authToken } = req.body;
+    const { id } = req.body;
 
-    const parsedId = parseInt(id);
     const { name, username, image, phone }: updatePayload = req.body;
-
-    if (!parsedId || isNaN(parsedId)) {
-      return res.status(400).json({
-        code: 400,
-        success: false,
-        message: 'Invalid ID, please provide a valid ID',
-      });
-    }
 
     const userWithId = await prisma.user.findFirst({
       where: {
-        id: parsedId,
+        id,
       },
     });
 
@@ -85,7 +81,7 @@ export const updateUser = async (
 
     const userUpdate = await prisma.user.update({
       where: {
-        id: parsedId,
+        id,
       },
       data: {
         name,

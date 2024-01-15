@@ -10,7 +10,6 @@ const eventRouter: Router = Router();
 eventRouter.post('/', authenticationMiddleware, eventValidator, createEvent);
 eventRouter.post(
   '/image-upload',
-  authenticationMiddleware,
   upload.single('image'),
   imageUploader,
 );
