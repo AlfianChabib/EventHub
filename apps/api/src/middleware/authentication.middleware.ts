@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   const authToken = req.headers.authorization;
+  const { file } = req;
 
   if (!authToken) {
     return res.status(403).json({
@@ -38,7 +39,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   // req.authToken = authToken;
   // req.cookie = cookieToken;
 
-  req.body = { id, username, email, isAdmin, authToken, ...req.body };
+  req.body = { id, username, email, isAdmin, authToken, file, ...req.body };
 
   next();
 };
