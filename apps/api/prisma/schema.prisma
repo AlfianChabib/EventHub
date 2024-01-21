@@ -44,7 +44,9 @@ model Event {
   image          String
   price          Float
   seats          Int
-  event_date     DateTime
+  startdate      DateTime
+  endDate        DateTime
+  duration       String
   created_at     DateTime        @default(now())
   updatet_at     DateTime        @updatedAt
   EventReview    EventReview[]
@@ -109,19 +111,3 @@ model Transaction {
   event           Event?   @relation(fields: [eventId], references: [id])
   eventId         Int
 }
-
-// enum EventCategory {
-//   All
-//   Business
-//   Entertainment
-//   Education
-//   FoodAndDrink
-//   Game
-//   Health
-//   Hobbies
-//   Lifestyle
-//   Music
-//   ScienceAndTechnology
-//   Sports
-//   Travel
-// }

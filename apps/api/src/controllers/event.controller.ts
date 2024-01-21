@@ -14,7 +14,9 @@ export interface createEventPayload {
   image: string;
   price: number;
   seats: number;
-  eventDate: Date;
+  startdate: Date;
+  endDate: Date;
+  duration: string;
   ticketTier: TicketTier[];
 }
 
@@ -29,7 +31,9 @@ export const createEvent = async (req: Request, res: Response) => {
       image,
       price,
       seats,
-      eventDate,
+      startdate,
+      endDate,
+      duration,
       ticketTier,
     }: createEventPayload = req.body;
 
@@ -41,7 +45,7 @@ export const createEvent = async (req: Request, res: Response) => {
       });
     }
 
-    const date = new Date(eventDate);
+    const date = new Date(startdate);
 
     const userWithId = await prisma.user.findUnique({
       where: {
@@ -76,7 +80,9 @@ export const createEvent = async (req: Request, res: Response) => {
           image,
           price,
           seats,
-          event_date: date,
+          startdate: date,
+          endDate: date,
+          duration: '2h',
         },
       });
 
