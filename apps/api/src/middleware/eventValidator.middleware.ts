@@ -10,13 +10,13 @@ export const eventValidator = [
   body('price').notEmpty().isCurrency().withMessage('Price is required'),
   body('seats').notEmpty().withMessage('Seats is required'),
   body('eventDate').notEmpty().isDate().withMessage('Event Date is required'),
+  body('ticketTier').isArray(),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     next();
   },
 ];

@@ -53,6 +53,7 @@ model Event {
   User           User?           @relation(fields: [userId], references: [id])
   userId         Int
   Ticket         Ticket[]
+  TicketTier     TicketTier[]
 }
 
 model Ticket {
@@ -72,6 +73,14 @@ model EventPromotion {
   isPrecent Boolean
   event     Event?  @relation(fields: [eventId], references: [id])
   eventId   Int     @unique
+}
+
+model TicketTier {
+  id       Int    @id @default(autoincrement())
+  nameTier String
+  price    Float
+  Event    Event? @relation(fields: [eventId], references: [id])
+  eventId  Int?
 }
 
 model EventReview {
@@ -100,3 +109,19 @@ model Transaction {
   event           Event?   @relation(fields: [eventId], references: [id])
   eventId         Int
 }
+
+// enum EventCategory {
+//   All
+//   Business
+//   Entertainment
+//   Education
+//   FoodAndDrink
+//   Game
+//   Health
+//   Hobbies
+//   Lifestyle
+//   Music
+//   ScienceAndTechnology
+//   Sports
+//   Travel
+// }

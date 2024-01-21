@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '@/prisma';
 
+interface TicketTier {
+  nameTier: string;
+  price: number;
+}
+
 export interface createEventPayload {
   title: string;
   description: string;
@@ -10,13 +15,10 @@ export interface createEventPayload {
   price: number;
   seats: number;
   eventDate: Date;
+  ticketTier: TicketTier[];
 }
 
-export const createEvent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createEvent = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
     const {
@@ -28,6 +30,7 @@ export const createEvent = async (
       price,
       seats,
       eventDate,
+      ticketTier,
     }: createEventPayload = req.body;
 
     const parsedId = parseInt(id);
@@ -63,7 +66,7 @@ export const createEvent = async (
         },
       });
 
-      await prisma.event.create({
+      const event = await prisma.event.create({
         data: {
           userId: user.id,
           title,
@@ -76,27 +79,49 @@ export const createEvent = async (
           event_date: date,
         },
       });
+
+      if (!ticketTier) return;
+
+      const ticketTierData = ticketTier.map(({ nameTier, price }) => {
+        const eventId = event.id;
+        return {
+          nameTier,
+          price,
+          eventId,
+        };
+      });
+
+      await prisma.ticketTier.createMany({
+        data: ticketTierData,
+      });
     });
 
     return res.status(201).json({
       code: 201,
       success: true,
       message: `Create event ${title} has been successfully`,
+      data: transactionEvent,
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
-export const updateEvent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateEvent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     return res.status(200).json({ id });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };

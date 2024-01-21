@@ -1,11 +1,7 @@
 import cloudinary from '@/utils/cloudinary';
 import { Request, Response, NextFunction } from 'express';
 
-export const imageUploader = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const imageUploader = async (req: Request, res: Response) => {
   try {
     const path = req.file?.path;
 
@@ -54,6 +50,11 @@ export const imageUploader = async (
       });
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };

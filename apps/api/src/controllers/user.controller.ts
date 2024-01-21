@@ -8,11 +8,7 @@ export interface updatePayload {
   phone: string;
 }
 
-export const getUserId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getUserId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const parsedId = parseInt(id);
@@ -51,15 +47,16 @@ export const getUserId = async (
       },
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
-export const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
 
@@ -98,6 +95,11 @@ export const updateUser = async (
       data: userUpdate,
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
