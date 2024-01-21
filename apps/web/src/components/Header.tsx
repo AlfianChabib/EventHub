@@ -45,7 +45,7 @@ export default function Header(props: HeaderProps) {
       if (data) setSessionData(data);
     });
   }, [sessionCookie]);
-  console.log('header', sessionData);
+  // console.log('header', sessionData);
 
   const handleLogout = async () => {
     await axios.post('http://localhost:8000/api/auth/signout', {
@@ -56,7 +56,7 @@ export default function Header(props: HeaderProps) {
 
   if (authPathname.includes(usePathname())) return null;
   return (
-    <header className="flex sticky top-0 left-0 z-50 backdrop-filter backdrop-blur-sm bg-opacity-30 items-center justify-between w-full py-2 gap-2">
+    <header className="flex sticky top-2 left-0 z-50 bg-slate-900 items-center justify-between w-full p-2 rounded-lg my-2 gap-2">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -67,7 +67,7 @@ export default function Header(props: HeaderProps) {
                   alt="logo"
                   width={24}
                   height={24}
-                  className="mr-2"
+                  className="md:mr-2 mr-0"
                 />
                 <p className="text-xl font-bold sm:flex hidden">EventHub</p>
               </NavigationMenuLink>
@@ -102,10 +102,20 @@ export default function Header(props: HeaderProps) {
           <NavigationMenuList>
             {pathname === createPathname ? null : (
               <NavigationMenuItem>
-                <Button asChild variant="secondary">
+                <Button asChild variant="secondary" className="sm:flex hidden">
                   <Link href="/create-event">
-                    <PlusSquare className="sm:hidden flex" />
-                    <p className="sm:flex hidden">Create Event</p>
+                    <PlusSquare />
+                    <p>Create Event</p>
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="sm:hidden flex"
+                  size="icon"
+                >
+                  <Link href="/create-event">
+                    <PlusSquare />
                   </Link>
                 </Button>
               </NavigationMenuItem>
@@ -113,7 +123,7 @@ export default function Header(props: HeaderProps) {
             <NavigationMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="secondary">
+                  <Button variant="secondary" size="icon">
                     <User />
                   </Button>
                 </DropdownMenuTrigger>

@@ -7,10 +7,11 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { Input } from '@/components/ui/input';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,10 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import axios from 'axios';
 import Link from 'next/link';
 import { eventCategories } from '@/constants/category';
 import { Separator } from '../ui/separator';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z
@@ -35,11 +43,17 @@ const formSchema = z.object({
   description: z
     .string()
     .min(6, { message: 'Description must be at least 6 characters.' }),
-  category: z.string(),
-  location: z.string(),
-  price: z.string().optional(),
-  seats: z.number(),
-  date: z.date(),
+  category: z.string({
+    required_error: 'Event category is required.',
+  }),
+  location: z.string({
+    required_error: 'Location is required.',
+  }),
+  price: z.number(),
+  seats: z
+    .number({ required_error: 'Number of seats is required.' })
+    .min(1, { message: 'Number of seats must be at least 1.' }),
+  date: z.date({ required_error: 'A date of birth is required.' }),
   time: z.string(),
 });
 
@@ -50,12 +64,19 @@ export default function CreateEventForm() {
       title: '',
       description: '',
       category: '',
+      location: '',
+      date: new Date(),
+      time: '',
+      price: 0,
+      seats: 1,
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
+      const { date } = values;
+      const dateString = format(date, 'yyyy-MM-dd');
+      console.log({ ...values, dateString });
     } catch (error) {}
   };
   return (
@@ -100,9 +121,22 @@ export default function CreateEventForm() {
           />
           <FormField
             control={form.control}
+            name="price"
+            render={({ field }: any) => (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="Price" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem className="max-w-md">
+              <FormItem className="md:w-1/2 w-full">
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -138,7 +172,7 @@ export default function CreateEventForm() {
             name="location"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>Event Location</FormLabel>
+                <FormLabel>Venue Location</FormLabel>
                 <FormControl>
                   <Input type="text" placeholder="Location" {...field} />
                 </FormControl>
@@ -146,6 +180,67 @@ export default function CreateEventForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="seats"
+            render={({ field }: any) => (
+              <FormItem>
+                <FormLabel>Avalilable Seats</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="Seats" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Separator className="my-4" />
+          <div className="mb-2">
+            <h2 className="text-3xl font-semibold">Date and Time</h2>
+            <p className="max-w-2xl text-xs text-slate-600">
+              Tell event-goers when your event starts and ends so they can make
+              plans to attend.
+            </p>
+          </div>
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date Event</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-[240px] pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, 'P')
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* <Button type="submit">Save & Create</Button> */}
           <div className="flex gap-x-2 justify-end">
             <Button variant="destructive">Discard</Button>
             <Button type="submit">Save & Create</Button>
