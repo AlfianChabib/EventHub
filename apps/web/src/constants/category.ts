@@ -1,0 +1,15 @@
+export const eventCategories = [
+  'All',
+  'Business',
+  'Entertainment',
+  'Education',
+  'Food and Drink',
+  'Game',
+  'Health',
+  'Hobbies',
+  'Lifestyle',
+  'Music',
+  'Science and Technology',
+  'Sports',
+  'Travel',
+];

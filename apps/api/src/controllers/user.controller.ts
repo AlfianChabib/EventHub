@@ -8,11 +8,7 @@ export interface updatePayload {
   phone: string;
 }
 
-export const getUserId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getUserId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const parsedId = parseInt(id);
@@ -39,39 +35,36 @@ export const getUserId = async (
       });
     }
 
+    const { password } = user;
+
     return res.status(200).json({
       code: 200,
       success: true,
       message: `User data with id ${id} fetched successfully`,
-      data: user,
+      data: {
+        ...user,
+        password: null,
+      },
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
-export const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id, cookieToken } = req.body;
+    const { id } = req.body;
 
-    const parsedId = parseInt(id);
     const { name, username, image, phone }: updatePayload = req.body;
-
-    if (!parsedId || isNaN(parsedId)) {
-      return res.status(400).json({
-        code: 400,
-        success: false,
-        message: 'Invalid ID, please provide a valid ID',
-      });
-    }
 
     const userWithId = await prisma.user.findFirst({
       where: {
-        id: parsedId,
+        id,
       },
     });
 
@@ -85,7 +78,7 @@ export const updateUser = async (
 
     const userUpdate = await prisma.user.update({
       where: {
-        id: parsedId,
+        id,
       },
       data: {
         name,
@@ -99,9 +92,14 @@ export const updateUser = async (
       code: 200,
       success: true,
       message: `User with id ${id} updated successfully`,
-      data: { userUpdate, cookieToken },
+      data: userUpdate,
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };

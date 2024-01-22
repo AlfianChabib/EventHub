@@ -1,6 +1,6 @@
 import prisma from '@/prisma';
 import dayjs from 'dayjs';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { generateReferral } from '@/common/helpers/referral.helper';
 import { compare, hash } from '@/common/helpers/bcrypt.helper';
 import { generateToken } from '@/common/helpers/jwt.helper';
@@ -18,11 +18,7 @@ export interface signinPayload {
   password: string;
 }
 
-export const signinUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const signinUser = async (req: Request, res: Response) => {
   try {
     const { email, password }: signinPayload = req.body;
 
@@ -34,14 +30,19 @@ export const signinUser = async (
 
     if (!userWithEmail) {
       return res.status(400).json({
-        message: 'Email does not match!',
+        code: 400,
+        success: false,
+        message: 'Email or Password does not match!',
       });
     }
 
     const isValidPassword = compare(password, userWithEmail.password);
+
     if (!isValidPassword) {
       return res.status(400).json({
-        message: 'Password does not match!',
+        code: 400,
+        success: false,
+        message: 'Email or Password does not match!',
       });
     }
 
@@ -52,37 +53,31 @@ export const signinUser = async (
       role: userWithEmail.role,
     });
 
-    res.status(200).cookie('api-token', jwtToken, {
+    res.cookie('user-token', jwtToken, {
       secure: false,
       httpOnly: true,
-      expires: dayjs().add(1, 'day').toDate(),
+      expires: dayjs().add(7, 'days').toDate(),
     });
 
     return res.status(200).json({
-      status: 200,
+      code: 200,
       success: true,
       message: 'User logged in successfully',
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
-export const signupUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const signupUser = async (req: Request, res: Response) => {
   try {
     const { name, username, email, password, referralCode }: inputPayload =
       req.body;
-
-    // generator referral code
-    const referral = generateReferral(username);
-    // expire date
-    const expireDate = dayjs().add(3, 'month').toDate();
-    // hash password
-    const hashedPassword = hash(password);
 
     const user = await prisma.user.findUnique({
       where: {
@@ -93,13 +88,46 @@ export const signupUser = async (
     // check username and email
     if (user?.username === username) {
       return res.status(400).send({
+        code: 400,
+        success: false,
         message: 'Username already exists please enter different username',
       });
     }
 
     if (user?.email === email) {
       return res.status(400).send({
+        code: 400,
+        success: false,
         message: 'Email already exists, login to your account',
+      });
+    }
+
+    // generator referral code
+    const referral = generateReferral(username);
+    // expire date
+    const expireDate = dayjs().add(90, 'days').toDate();
+    // hash password
+    const hashedPassword = hash(password);
+
+    if (!referralCode) {
+      const createUser = await prisma.user.create({
+        data: {
+          name,
+          username,
+          email,
+          password: hashedPassword,
+          referral,
+        },
+      });
+
+      return res.status(200).json({
+        code: 200,
+        success: true,
+        message: `Register User successfully, you can login with your email and password`,
+        data: {
+          ...createUser,
+          password: null,
+        },
       });
     }
 
@@ -116,7 +144,8 @@ export const signupUser = async (
 
       if (!userReferral) {
         return res.status(400).json({
-          status: 400,
+          code: 400,
+          success: false,
           message: `Referral code ${referralCode} not found, please check and try again`,
         });
       }
@@ -129,7 +158,6 @@ export const signupUser = async (
             email,
             password: hashedPassword,
             referral,
-            role: 'user',
           },
         });
         const createPoint = await prisma.point.create({
@@ -148,7 +176,7 @@ export const signupUser = async (
       });
 
       return res.status(200).json({
-        status: 200,
+        code: 200,
         success: true,
         message: `Register User with Referral code ${referralCode} successfully, you can login with your email and password`,
         data: {
@@ -159,45 +187,66 @@ export const signupUser = async (
         },
       });
     }
-
-    const createUser = await prisma.user.create({
-      data: {
-        name,
-        username,
-        email,
-        password: hashedPassword,
-        referral,
-        role: 'user',
-      },
-    });
-
-    return res.status(200).json({
-      status: 200,
-      success: true,
-      message: `Register User successfully, you can login with your email and password`,
-      data: {
-        ...createUser,
-        password: null,
-      },
-    });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
-export const signoutUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const signoutUser = async (req: Request, res: Response) => {
   try {
-    res.clearCookie('api-token');
+    res.clearCookie('user-token');
     return res.status(200).json({
-      status: 200,
+      code: 200,
       success: true,
       message: 'User logged out successfully',
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getSessionUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      code: 200,
+      success: true,
+      data: {
+        ...user,
+        password: null,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
