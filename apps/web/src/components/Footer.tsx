@@ -15,7 +15,6 @@ export default function Footer() {
             height={38}
           />
         </Link>
-
         <p>2024 EventHub. All Rights reserved.</p>
       </div>
     </footer>

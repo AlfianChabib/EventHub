@@ -40,9 +40,9 @@ export default function page() {
           </CardFooter>
         </Card>
       </div>
-      {/* <div className="flex flex-1">
+      <div className="flex flex-1">
         <Image src="/logo.png" alt="logo" width={200} height={200} />
-      </div> */}
+      </div>
     </section>
   );
 }

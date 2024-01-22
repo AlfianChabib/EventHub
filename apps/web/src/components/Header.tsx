@@ -52,6 +52,8 @@ export default function Header(props: HeaderProps) {
     });
   }, [sessionCookie]);
 
+  console.log(sessionData);
+
   const handleLogout = async () => {
     await axios.post('http://localhost:8000/api/auth/signout', {
       withCredentials: true,
@@ -139,7 +141,7 @@ export default function Header(props: HeaderProps) {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link className="w-full" href="/myprofile">
+                    <Link className="w-full" href="/profile">
                       Profile
                     </Link>
                   </DropdownMenuItem>
