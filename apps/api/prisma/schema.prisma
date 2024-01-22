@@ -41,10 +41,10 @@ model Event {
   description    String
   category       String
   location       String
-  image          String
+  image          String?
   price          Float
   seats          Int
-  startdate      DateTime
+  startDate      DateTime
   endDate        DateTime
   duration       String
   created_at     DateTime        @default(now())

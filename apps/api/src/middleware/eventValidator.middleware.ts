@@ -6,11 +6,14 @@ export const eventValidator = [
   body('description').notEmpty().withMessage('Description is required'),
   body('category').notEmpty().withMessage('Category is required'),
   body('location').notEmpty().withMessage('Location is required'),
-  body('image').notEmpty().withMessage('Image url is required'),
   body('price').notEmpty().isCurrency().withMessage('Price is required'),
   body('seats').notEmpty().withMessage('Seats is required'),
-  body('eventDate').notEmpty().isDate().withMessage('Event Date is required'),
-  body('ticketTier').isArray(),
+  body('startDate')
+    .notEmpty()
+    .isISO8601()
+    .withMessage('Start Date is required'),
+  body('endDate').notEmpty().isISO8601().withMessage('End Date is required'),
+  body('duration').notEmpty().isString().withMessage('Duration is required'),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);

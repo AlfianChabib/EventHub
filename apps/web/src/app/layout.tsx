@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { cookies } from 'next/headers';
 import './globals.css';
 
-export const fontSans = FontSans({
+const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 });
@@ -33,7 +33,7 @@ export default function RootLayout({
         <main className="flex flex-col max-w-7xl mx-auto px-2 relative">
           <Header sessionCookie={sessionCookie} />
           {children}
-          <Footer />
+          {/* <Footer /> */}
         </main>
       </body>
     </html>

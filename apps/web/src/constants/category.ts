@@ -13,19 +13,3 @@ export const eventCategories = [
   'Sports',
   'Travel',
 ];
-
-// enum EventCategory {
-//   All
-//   Business
-//   Entertainment
-//   Education
-//   FoodAndDrink
-//   Game
-//   Health
-//   Hobbies
-//   Lifestyle
-//   Music
-//   ScienceAndTechnology
-//   Sports
-//   Travel
-// }

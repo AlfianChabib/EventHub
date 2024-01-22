@@ -1,23 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import prisma from '@/prisma';
-
-interface TicketTier {
-  nameTier: string;
-  price: number;
-}
 
 export interface createEventPayload {
   title: string;
   description: string;
   location: string;
   category: string;
-  image: string;
   price: number;
   seats: number;
-  startdate: Date;
+  startDate: Date;
   endDate: Date;
   duration: string;
-  ticketTier: TicketTier[];
 }
 
 export const createEvent = async (req: Request, res: Response) => {
@@ -28,13 +21,11 @@ export const createEvent = async (req: Request, res: Response) => {
       description,
       location,
       category,
-      image,
       price,
       seats,
-      startdate,
+      startDate,
       endDate,
       duration,
-      ticketTier,
     }: createEventPayload = req.body;
 
     const parsedId = parseInt(id);
@@ -44,8 +35,6 @@ export const createEvent = async (req: Request, res: Response) => {
         code: 400,
       });
     }
-
-    const date = new Date(startdate);
 
     const userWithId = await prisma.user.findUnique({
       where: {
@@ -59,6 +48,9 @@ export const createEvent = async (req: Request, res: Response) => {
         message: 'User not found',
       });
     }
+
+    const dateStart = new Date(startDate);
+    const dateEnd = new Date(endDate);
 
     const transactionEvent = await prisma.$transaction(async (prisma) => {
       const user = await prisma.user.update({
@@ -77,36 +69,24 @@ export const createEvent = async (req: Request, res: Response) => {
           description,
           location,
           category,
-          image,
           price,
           seats,
-          startdate: date,
-          endDate: date,
-          duration: '2h',
+          startDate: dateStart,
+          endDate: dateEnd,
+          duration,
         },
       });
-
-      if (!ticketTier) return;
-
-      const ticketTierData = ticketTier.map(({ nameTier, price }) => {
-        const eventId = event.id;
-        return {
-          nameTier,
-          price,
-          eventId,
-        };
-      });
-
-      await prisma.ticketTier.createMany({
-        data: ticketTierData,
-      });
+      return { user, event };
     });
 
     return res.status(201).json({
       code: 201,
       success: true,
       message: `Create event ${title} has been successfully`,
-      data: transactionEvent,
+      data: {
+        eventId: transactionEvent.event.id,
+        duration,
+      },
     });
   } catch (error) {
     console.log(error);
