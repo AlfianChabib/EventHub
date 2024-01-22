@@ -36,7 +36,13 @@ export default function Header(props: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const authPathname = ['/auth/signin', '/auth/signup'];
-  const createPathname = '/create-event';
+  const hideSearchBar = [
+    '/create-event',
+    '/event/[id]',
+    '/myprofile',
+    '/event/[id]/edit',
+  ];
+  const hideCreateButton = ['/create-event', '/event/[id]', '/event/[id]/edit'];
 
   const [sessionData, setSessionData] = useState<object>({});
 
@@ -45,7 +51,6 @@ export default function Header(props: HeaderProps) {
       if (data) setSessionData(data);
     });
   }, [sessionCookie]);
-  // console.log('header', sessionData);
 
   const handleLogout = async () => {
     await axios.post('http://localhost:8000/api/auth/signout', {
@@ -54,7 +59,7 @@ export default function Header(props: HeaderProps) {
     router.refresh();
   };
 
-  if (authPathname.includes(usePathname())) return null;
+  if (authPathname.includes(pathname)) return null;
   return (
     <header className="flex sticky top-2 left-0 z-50 bg-slate-900 items-center justify-between w-full p-2 rounded-lg my-2 gap-2">
       <NavigationMenu>
@@ -75,7 +80,7 @@ export default function Header(props: HeaderProps) {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      {pathname === createPathname ? null : (
+      {hideSearchBar.includes(pathname) ? null : (
         <Input
           placeholder="Search events..."
           type="search"
@@ -100,7 +105,7 @@ export default function Header(props: HeaderProps) {
       ) : (
         <NavigationMenu className="flex justify-between">
           <NavigationMenuList>
-            {pathname === createPathname ? null : (
+            {hideCreateButton.includes(pathname) ? null : (
               <NavigationMenuItem>
                 <Button asChild variant="secondary" className="sm:flex hidden">
                   <Link href="/create-event">
