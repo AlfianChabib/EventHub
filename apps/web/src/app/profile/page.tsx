@@ -1,18 +1,21 @@
-import { SidebarMenu } from '@/components/SideBar';
-import Heading from '@/utils/Heading';
+import React from 'react';
+import { Tabs } from '@/components/ui/tabs';
+import Sidebar from '@/components/profile/Sidebar';
+import MainContent from '@/components/profile/MainContent';
+import { sessionCookie } from '@/lib/sessionCookie';
 
 export default function page() {
   return (
-    <section className="flex flex-col w-full min-h-screen">
-      <div className="flex flex-1 w-full">
-        {/* <Heading
-          title={`${user?.name} Profile | Elearning`}
-          description="E learning platform for student to learn and get help from teachers"
-          keywords="Programming,Redux,ML,"
-        /> */}
-        <SidebarMenu />
-        {/* <Profile user={user} /> */}
-      </div>
+    <section className="flex flex-col w-full">
+      <Tabs
+        defaultValue="profile"
+        className="flex relative w-full with-navbar max-w-7xl gap-4"
+      >
+        {/* left */}
+        <Sidebar sessionCookie={sessionCookie} />
+        {/* right */}
+        <MainContent sessionCookie={sessionCookie} />
+      </Tabs>
     </section>
   );
 }

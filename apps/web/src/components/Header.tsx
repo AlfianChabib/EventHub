@@ -44,7 +44,7 @@ export default function Header(props: HeaderProps) {
   ];
   const hideCreateButton = ['/create-event', '/event/[id]', '/event/[id]/edit'];
 
-  const [sessionData, setSessionData] = useState<object>({});
+  const [sessionData, setSessionData] = useState<any>({});
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -52,7 +52,7 @@ export default function Header(props: HeaderProps) {
     });
   }, [sessionCookie]);
 
-  console.log(sessionData);
+  // console.log(sessionData);
 
   const handleLogout = async () => {
     await axios.post('http://localhost:8000/api/auth/signout', {
@@ -138,7 +138,10 @@ export default function Header(props: HeaderProps) {
                   className="w-56 md:mr-0 mr-2"
                   sideOffset={6}
                 >
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <p>My Account</p>
+                    <p>{sessionData?.username}</p>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link className="w-full" href="/profile">

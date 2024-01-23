@@ -2,18 +2,19 @@
 
 import * as z from 'zod';
 import axios from 'axios';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
+import { Calendar } from '@/components/ui/calendar';
+import { Separator } from '../ui/separator';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
-import { Input } from '@/components/ui/input';
-import { format, formatDistance, formatISO, formatISODuration } from 'date-fns';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
 import { eventCategories } from '@/constants/category';
-import { Separator } from '../ui/separator';
-import { cn } from '@/lib/utils';
 import { generateTimeArray } from '@/constants/time';
+import { format, formatDistance, formatISO } from 'date-fns';
 import {
   Form,
   FormControl,
@@ -29,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
@@ -59,6 +59,19 @@ const formSchema = z.object({
   endDate: z.date({ required_error: 'A date of birth is required.' }),
   startDatetime: z.string(),
   endDatetime: z.string(),
+  ticketTiers: z.array(
+    z.object({
+      nameTier: z.string(),
+      price: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
+        message: 'Expected number, received a string',
+      }),
+      description: z
+        .string()
+        .refine((val) => !Number.isNaN(parseInt(val, 10)), {
+          message: 'Expected number, received a string',
+        }),
+    }),
+  ),
 });
 
 interface CreateEventFormProps {
@@ -89,6 +102,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       endDatetime: '',
       price: '0',
       seats: '0',
+      ticketTiers: [
+        {
+          nameTier: '',
+          price: '0',
+          description: '',
+        },
+      ],
     },
   });
 
@@ -111,8 +131,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
         new Date(endDatetimeISO),
       );
 
-      console.log(duration);
-
       const response = await axios
         .post(
           'http://localhost:8000/api/event',
@@ -126,6 +144,18 @@ export default function CreateEventForm(props: CreateEventFormProps) {
             startDate: startDatetimeISO,
             endDate: endDatetimeISO,
             duration,
+            ticketTiers: [
+              {
+                nameTier: 'test1',
+                price: 20000,
+                description: 'yyyy',
+              },
+              {
+                nameTier: 'test2',
+                price: 40000,
+                description: 'yyyy',
+              },
+            ],
           },
           {
             withCredentials: true,
@@ -141,7 +171,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       console.log(response);
 
       if (response.success === true) {
-        router.push('/myprofile');
+        router.push('/profile');
         router.refresh();
         form.reset();
       } else {
@@ -151,6 +181,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       console.log(error);
     }
   };
+
   return (
     <div className="md:p-8 p-2">
       <Form {...form}>
@@ -410,6 +441,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
             />
           </div>
           <Separator className="my-4" />
+          <div className="mb-2">
+            <h2 className="text-3xl font-semibold">Ticket Tier</h2>
+            <p className="max-w-2xl text-xs text-slate-600">
+              Tell event-goers when your event starts and ends so they can make
+              plans to attend.
+            </p>
+          </div>
           <div className="flex gap-x-2 justify-end">
             <Button
               variant="secondary"
