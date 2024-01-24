@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import {
   EventDataResponse,
+  SessionData,
   getEventByUserSession,
   getSessionClient,
 } from '@/services/client';
@@ -33,8 +34,8 @@ interface SidebarProps {
 export default function Sidebar(props: SidebarProps) {
   const { sessionCookie } = props;
   const [isOpen, setIsOpen] = useState(false);
-  const [sessionData, setSessionData] = useState<any>({});
-  const [eventData, setEventData] = useState<any>([]);
+  const [sessionData, setSessionData] = useState<SessionData | null>(null);
+  const [eventData, setEventData] = useState<EventDataResponse[] | null>(null);
 
   useEffect(() => {
     getEventByUserSession(sessionCookie).then((data) => {
@@ -48,8 +49,17 @@ export default function Sidebar(props: SidebarProps) {
     });
   }, [sessionCookie]);
 
+  if (!sessionData || !eventData) {
+    return;
+  }
+
   console.log(sessionData);
   console.log(eventData);
+
+  const displayName =
+    sessionData.name.length > 15
+      ? `${sessionData.name.slice(0, 15)}...`
+      : sessionData.name;
 
   const handleOpenSidebar = () => {
     setIsOpen(!isOpen);
@@ -57,8 +67,8 @@ export default function Sidebar(props: SidebarProps) {
 
   return (
     <div
-      className={`lg:flex lg:relative absolute bg-background lg:-translate-x-0 ease-in transition-all flex-col lg:w-[500px] max-w-[500px] min-h-full p-4 gap-4 border rounded-md justify-between ${
-        isOpen ? '-translate-x-0' : '-translate-x-[330px]'
+      className={`lg:flex lg:relative absolute bg-background lg:-translate-x-0 ease-in transition-all flex-col lg:w-[500px] max-w-[500px] min-h-full p-4 gap-4 border rounded-md justify-between z-20 ${
+        isOpen ? '-translate-x-0' : '-translate-x-[380px]'
       } `}
     >
       <Button
@@ -75,25 +85,17 @@ export default function Sidebar(props: SidebarProps) {
           <Card className="overflow-hidden">
             <div className="flex gap-4 p-2">
               <Avatar className="w-16 h-16 items-center justify-center border">
-                {/* <AvatarImage src="https://avatars.githubusercontent.com/u/108635592?v=4" /> */}
-                <AvatarFallback>AC</AvatarFallback>
+                <AvatarImage src={sessionData?.image} />
+                <AvatarFallback>{sessionData?.name.slice(0, 1)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col justify-center gap-1">
-                <CardTitle>{sessionData.name}</CardTitle>
-                <CardDescription>{sessionData.username}</CardDescription>
+                <CardTitle>{displayName}</CardTitle>
+                <CardDescription>{sessionData?.email}</CardDescription>
               </div>
             </div>
             <Separator />
             <div className="flex gap-4 p-2 items-center justify-center">
-              {/* <CardDescription>
-                Event : <span>{eventData.length}</span>
-              </CardDescription>
-              <Separator orientation="vertical" className="h-6" />
-              <CardDescription>
-                Voucher : <span>0</span>
-              </CardDescription>
-              <Separator orientation="vertical" className="h-6" /> */}
-              <CardDescription className='font-semibold'>
+              <CardDescription className="font-semibold">
                 Point : <span>0</span>
               </CardDescription>
             </div>
