@@ -139,16 +139,31 @@ export default function Header(props: HeaderProps) {
                   sideOffset={6}
                 >
                   <DropdownMenuLabel>
-                    <p>My Account</p>
+                    {/* <p>My Account</p> */}
                     <p>{sessionData?.username}</p>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link className="w-full" href="/profile">
-                      Profile
+                    Profile
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  <Separator className="my-2" />
+                  <DropdownMenuItem>
+                    <Link className="w-full" href="/events">
+                    Events
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link className="w-full" href="/faq">
+                    FAQ
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link className="w-full" href="/about">
+                    About Us
+                    </Link>
+                  </DropdownMenuItem>
                   <Separator className="my-2" />
                   <DropdownMenuItem onClick={handleLogout}>
                     Log Out

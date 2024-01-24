@@ -9,7 +9,8 @@ export default function page() {
     <section className="flex flex-col w-full">
       <Tabs
         defaultValue="profile"
-        className="flex relative w-full with-navbar max-w-7xl gap-4"
+        // className="flex relative w-full with-navbar max-w-7xl gap-4"
+        className="flex relative w-full with-navbar max-w-8xl gap-4"
       >
         {/* left */}
         <Sidebar sessionCookie={sessionCookie} />

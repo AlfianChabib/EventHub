@@ -14,6 +14,11 @@ import {
   User,
   PanelRightOpen,
   PanelLeftOpen,
+  PlusSquare,
+  Coins,
+  Ticket,
+  LayoutDashboard,
+  CalendarRange,
 } from 'lucide-react';
 import {
   EventDataResponse,
@@ -74,27 +79,28 @@ export default function Sidebar(props: SidebarProps) {
                 <AvatarFallback>AC</AvatarFallback>
               </Avatar>
               <div className="flex flex-col justify-center gap-1">
-                <CardTitle>Alfian Chabib</CardTitle>
-                <CardDescription>
-                  <span>@</span>alfianchabib
-                </CardDescription>
+                <CardTitle>{sessionData.name}</CardTitle>
+                <CardDescription>{sessionData.username}</CardDescription>
               </div>
             </div>
             <Separator />
             <div className="flex gap-4 p-2 items-center justify-center">
-              <CardDescription>
+              {/* <CardDescription>
                 Event : <span>{eventData.length}</span>
               </CardDescription>
               <Separator orientation="vertical" className="h-6" />
               <CardDescription>
                 Voucher : <span>0</span>
               </CardDescription>
-              <Separator orientation="vertical" className="h-6" />
-              <CardDescription>
+              <Separator orientation="vertical" className="h-6" /> */}
+              <CardDescription className='font-semibold'>
                 Point : <span>0</span>
               </CardDescription>
             </div>
           </Card>
+          <h1 className="flex items-center justify-center font-semibold">
+            User Information
+          </h1>
           <div className="flex items-center justify-center border rounded-md">
             <div defaultValue="profile" className="w-full p-1">
               <TabsList className="flex-col w-full h-full gap-2">
@@ -109,42 +115,70 @@ export default function Sidebar(props: SidebarProps) {
                 <Separator />
                 <TabsTrigger
                   className="w-full justify-between"
-                  value="products"
+                  value="tickets"
                   onClick={handleOpenSidebar}
                 >
-                  <p>Event</p>
-                  <Package size={18} />
+                  <p>My Tickets</p>
+                  <Ticket size={18} />
                 </TabsTrigger>
                 <Separator />
                 <TabsTrigger
                   className="w-full justify-between"
-                  value="carts"
+                  value="points"
                   onClick={handleOpenSidebar}
                 >
-                  <p>Ticket</p>
-                  <ShoppingCart size={18} />
-                </TabsTrigger>
-                <Separator />
-                <TabsTrigger
-                  className="w-full justify-between"
-                  value="wishlists"
-                  onClick={handleOpenSidebar}
-                >
-                  <p>Wishlists</p>
-                  <Bookmark size={18} />
+                  <p>My Points</p>
+                  <Coins size={18} />
                 </TabsTrigger>
               </TabsList>
             </div>
           </div>
+          <h1 className="flex items-center justify-center font-semibold">
+            Event Organizer
+          </h1>
+          <div className="flex items-center justify-center border rounded-md">
+            <div defaultValue="profile" className="w-full p-1">
+              <TabsList className="flex-col w-full h-full gap-2">
+                <TabsTrigger
+                  className="w-full justify-between"
+                  value="dashboard"
+                  onClick={handleOpenSidebar}
+                >
+                  <p>Dashboard</p>
+                  <LayoutDashboard size={18} />
+                </TabsTrigger>
+                <Separator />
+                <TabsTrigger
+                  className="w-full justify-between"
+                  value="events"
+                  onClick={handleOpenSidebar}
+                >
+                  <p>My Events</p>
+                  <CalendarRange size={18} />
+                </TabsTrigger>
+                <Separator />
+                <TabsTrigger
+                  className="w-full justify-between"
+                  value="orders"
+                  onClick={handleOpenSidebar}
+                >
+                  <p>Orders</p>
+                  <ShoppingCart size={18} />
+                </TabsTrigger>
+                <Separator />
+              </TabsList>
+            </div>
+          </div>
         </div>
+
         <TabsList className="flex flex-col w-full h-20 border">
           <TabsTrigger
             value="createProduct"
             className="flex w-full h-full gap-2"
             onClick={handleOpenSidebar}
           >
-            <PackagePlus />
-            <p className="text-xl">Create Product</p>
+            <PlusSquare />
+            <p className="text-xl">Create Event</p>
           </TabsTrigger>
         </TabsList>
       </div>
