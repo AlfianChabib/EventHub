@@ -31,10 +31,9 @@ export default function RootLayout({
         )}
       >
         <main className="flex flex-col max-w-7xl mx-auto px-2 relative">
-          {/* <main className="flex flex-col max-w-8xl mx-auto px-2 relative"> */}
           <Header sessionCookie={sessionCookie} />
           {children}
-          {/* <Footer /> */}
+          <Footer />
         </main>
       </body>
     </html>

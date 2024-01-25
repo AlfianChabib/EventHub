@@ -806,10 +806,19 @@ export const postEventReview = async (req: Request, res: Response) => {
 export const getEventId = async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
-    const parsedId = parseInt(eventId);
-    const event = await prisma.event.findUnique({
+    const parsedEventId = parseInt(eventId);
+
+    if (!parsedEventId || isNaN(parsedEventId)) {
+      return res.status(400).json({
+        code: 400,
+        success: false,
+        message: 'Invalid ID, please provide a valid ID',
+      });
+    }
+
+    const eventWithId = await prisma.event.findUnique({
       where: {
-        id: parsedId,
+        id: parsedEventId,
       },
       include: {
         discount: true,
@@ -817,7 +826,7 @@ export const getEventId = async (req: Request, res: Response) => {
       },
     });
 
-    if (!event) {
+    if (!eventWithId) {
       return res.status(404).json({
         code: 404,
         success: false,
@@ -828,7 +837,7 @@ export const getEventId = async (req: Request, res: Response) => {
     return res.status(200).json({
       code: 200,
       success: true,
-      data: event,
+      data: eventWithId,
     });
   } catch (error) {
     console.log(error);

@@ -19,6 +19,7 @@ import {
 const eventRouter: Router = Router();
 
 eventRouter.get('/', getAllEvent);
+
 eventRouter.get('/:eventId', getEventId);
 
 eventRouter.post('/', authenticationMiddleware, eventValidator, createEvent);

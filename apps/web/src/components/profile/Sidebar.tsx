@@ -7,9 +7,6 @@ import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import {
-  Bookmark,
-  Package,
-  PackagePlus,
   ShoppingCart,
   User,
   PanelRightOpen,
@@ -20,12 +17,7 @@ import {
   LayoutDashboard,
   CalendarRange,
 } from 'lucide-react';
-import {
-  EventDataResponse,
-  SessionData,
-  getEventByUserSession,
-  getSessionClient,
-} from '@/services/client';
+import { SessionData, getSessionClient } from '@/services/client';
 
 interface SidebarProps {
   sessionCookie: string | undefined;
@@ -35,13 +27,6 @@ export default function Sidebar(props: SidebarProps) {
   const { sessionCookie } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
-  const [eventData, setEventData] = useState<EventDataResponse[] | null>(null);
-
-  useEffect(() => {
-    getEventByUserSession(sessionCookie).then((data) => {
-      if (data) setEventData(data);
-    });
-  }, [sessionCookie]);
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -49,12 +34,11 @@ export default function Sidebar(props: SidebarProps) {
     });
   }, [sessionCookie]);
 
-  if (!sessionData || !eventData) {
+  if (!sessionData) {
     return;
   }
 
   console.log(sessionData);
-  console.log(eventData);
 
   const displayName =
     sessionData.name.length > 15

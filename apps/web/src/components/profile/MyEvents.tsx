@@ -37,7 +37,7 @@ export default function ProfileInfo(props: MainContentProps) {
   console.log(eventData);
   return (
     <div>
-      <h1 className='flex align-items-center justify-center mb-3 font-semibold'>List of your Events</h1>
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">List of your Events</h1>
       <div className="flex w-full">
           <Table>
           {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
