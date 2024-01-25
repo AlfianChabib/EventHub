@@ -59,25 +59,22 @@ export default function Dashboard(props: MainContentProps) {
   console.log(eventData);
   return (
     <div>
-      <h1 className="flex align-items-center justify-center mb-3 font-semibold">
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
         Dashboard
       </h1>
       <ScrollArea className="h-full">
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
-            <div>
-              <p>Test</p>
-            </div>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics" disabled>
+              <TabsTrigger value="analytics">
                 Analytics
               </TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -98,15 +95,15 @@ export default function Dashboard(props: MainContentProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">$45,231.89</div>
-                    <p className="text-xs text-muted-foreground">
+                    {/* <p className="text-xs text-muted-foreground">
                       +20.1% from last month
-                    </p>
+                    </p> */}
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Subscriptions
+                      Total Attendees
                     </CardTitle>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -126,13 +123,13 @@ export default function Dashboard(props: MainContentProps) {
                   <CardContent>
                     <div className="text-2xl font-bold">+2350</div>
                     <p className="text-xs text-muted-foreground">
-                      +180.1% from last month
+                      {/* +180.1% from last month */}
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                    <CardTitle className="text-sm font-medium">Total Event</CardTitle>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -149,12 +146,12 @@ export default function Dashboard(props: MainContentProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+12,234</div>
-                    <p className="text-xs text-muted-foreground">
+                    {/* <p className="text-xs text-muted-foreground">
                       +19% from last month
-                    </p>
+                    </p> */}
                   </CardContent>
                 </Card>
-                <Card>
+                {/* <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                       Active Now
@@ -178,9 +175,10 @@ export default function Dashboard(props: MainContentProps) {
                       +201 since last hour
                     </p>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+                {/* Card Analytics Overview */}
                 <Card className="col-span-4">
                   <CardHeader>
                     <CardTitle>Overview</CardTitle>
@@ -189,6 +187,7 @@ export default function Dashboard(props: MainContentProps) {
                     <Overview />
                   </CardContent>
                 </Card>
+                {/* Card Recent Sales */}
                 <Card className="col-span-4 md:col-span-3">
                   <CardHeader>
                     <CardTitle>Recent Sales</CardTitle>
@@ -202,6 +201,7 @@ export default function Dashboard(props: MainContentProps) {
                 </Card>
               </div>
             </TabsContent>
+            <TabsContent value="analytics" className="space-y-4"></TabsContent>
           </Tabs>
         </div>
       </ScrollArea>

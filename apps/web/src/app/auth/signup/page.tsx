@@ -8,12 +8,18 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import Heading from '@/utils/Heading';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function page() {
   return (
     <section className="flex min-h-screen w-full items-center justify-center">
+      <Heading
+				title="Sign Up"
+				description="EventHub is a platform to promote your events with ease"
+				keywords="Event, Music, Concert, Seminar"
+			/>
       <div className="flex flex-1 w-full">
         <Card className="min-w-[400px]">
           <CardHeader>

@@ -17,10 +17,10 @@ export default function MainContent(props: MainContentProps) {
         <ProfileInfo sessionCookie={sessionCookie} />
       </TabsContent>
       <TabsContent value="tickets" className="w-full with-navbar">
-        <h1 className="text-3xl">My Tickets</h1>
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">Profile Information</h1>
       </TabsContent>
       <TabsContent value="points" className="w-full with-navbar">
-        <h1 className="text-3xl">My Points</h1>
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">Profile Information</h1>
       </TabsContent>
       <TabsContent value="dashboard" className="w-full with-navbar">
         <Dashboard sessionCookie={sessionCookie} />
@@ -29,7 +29,7 @@ export default function MainContent(props: MainContentProps) {
         <EventProfile sessionCookie={sessionCookie} />
       </TabsContent>
       <TabsContent value="orders" className="w-full with-navbar">
-        <h1 className="text-3xl">Orders</h1>
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">Profile Information</h1>
       </TabsContent>
     </div>
   );

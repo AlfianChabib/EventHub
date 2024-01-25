@@ -10,10 +10,16 @@ import {
 import SignInForm from '@/components/form/SignInForm';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import Heading from '@/utils/Heading';
 
 export default function page() {
   return (
     <section className="flex min-h-screen items-center justify-center">
+      <Heading
+				title="Sign In"
+				description="EventHub is a platform to promote your events with ease"
+				keywords="Event, Music, Concert, Seminar"
+			/>
       <div className='flex align-items'>
         <div>
           <Card className="min-w-[400px]">
