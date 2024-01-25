@@ -12,12 +12,14 @@ import {
   getAllEvent,
   getAllEventSession,
   getEventById,
+  getEventId,
   updateEvent,
 } from '@/controllers/event.controller';
 
 const eventRouter: Router = Router();
 
 eventRouter.get('/', getAllEvent);
+eventRouter.get('/:eventId', getEventId);
 
 eventRouter.post('/', authenticationMiddleware, eventValidator, createEvent);
 

@@ -1,18 +1,20 @@
 import { cookies } from 'next/headers';
 import axios from 'axios';
+import { SessionData } from './client';
 
-export const getSession = async () => {
+axios.defaults.withCredentials = true;
+
+export const getSession = async (): Promise<SessionData | undefined> => {
   try {
     const cookieStore = cookies();
     const userToken = cookieStore.get('user-token');
-    if (!userToken) return {};
+    if (!userToken) return undefined;
     const response = await axios
       .get('http://localhost:8000/api/auth/session', {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken?.value}`,
+          Authorization: `Bearer ${userToken}`,
         },
-        withCredentials: true,
       })
       .then((res) => res.data)
       .catch((err) => console.log(err));

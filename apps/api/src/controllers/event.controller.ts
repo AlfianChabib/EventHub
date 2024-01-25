@@ -1,5 +1,18 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
+import { create } from 'ts-node';
+
+export interface DiscountEventPayload {
+  discount: number;
+  discountEndDate: Date;
+  discountStartDate: Date;
+}
+
+export interface TicketTierPayload {
+  nameTier: string;
+  price: number;
+  description: string;
+}
 
 export interface CreateEventPayload {
   title: string;
@@ -11,6 +24,7 @@ export interface CreateEventPayload {
   startDate: Date;
   endDate: Date;
   duration: string;
+  discountEvent?: DiscountEventPayload;
   ticketTiers?: TicketTierPayload[];
 }
 export interface UpdateEventPayload {
@@ -24,13 +38,8 @@ export interface UpdateEventPayload {
   startDate?: Date;
   endDate?: Date;
   duration?: string;
+  discountEvent?: DiscountEventPayload;
   ticketTiers?: TicketTierPayload[];
-}
-
-export interface TicketTierPayload {
-  nameTier: string;
-  price: number;
-  description: string;
 }
 
 // Create Event all users
@@ -48,6 +57,7 @@ export const createEvent = async (req: Request, res: Response) => {
       endDate,
       duration,
       ticketTiers,
+      discountEvent,
     }: CreateEventPayload = req.body;
 
     const parsedId = parseInt(id);
@@ -87,8 +97,8 @@ export const createEvent = async (req: Request, res: Response) => {
         },
       });
 
-      if (!ticketTiers) {
-        return await prisma.event.create({
+      if (!ticketTiers && !discountEvent) {
+        await prisma.event.create({
           data: {
             userId: user.id,
             title,
@@ -104,25 +114,84 @@ export const createEvent = async (req: Request, res: Response) => {
         });
       }
 
-      const event = await prisma.event.create({
-        data: {
-          userId: user.id,
-          title,
-          description,
-          location,
-          category,
-          price,
-          seats,
-          startDate: dateStart,
-          endDate: dateEnd,
-          duration,
-          TicketTier: {
-            createMany: {
-              data: ticketTiers,
+      if (discountEvent && !ticketTiers) {
+        const discountStartDate = new Date(discountEvent.discountStartDate);
+        const discountEndDate = new Date(discountEvent.discountEndDate);
+        await prisma.event.create({
+          data: {
+            userId: user.id,
+            title,
+            description,
+            location,
+            category,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            discount: {
+              create: {
+                discount: discountEvent.discount,
+                discountEndDate: discountEndDate,
+                discountStartDate: discountStartDate,
+              },
             },
           },
-        },
-      });
+        });
+      }
+
+      if (!discountEvent && ticketTiers) {
+        await prisma.event.create({
+          data: {
+            userId: user.id,
+            title,
+            description,
+            location,
+            category,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            TicketTier: {
+              createMany: {
+                data: ticketTiers,
+              },
+            },
+          },
+        });
+      }
+
+      if (discountEvent && ticketTiers) {
+        const discountStartDate = new Date(discountEvent.discountStartDate);
+        const discountEndDate = new Date(discountEvent.discountEndDate);
+        return await prisma.event.create({
+          data: {
+            userId: user.id,
+            title,
+            description,
+            location,
+            category,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            discount: {
+              create: {
+                discount: discountEvent.discount,
+                discountEndDate: discountEndDate,
+                discountStartDate: discountStartDate,
+              },
+            },
+            TicketTier: {
+              createMany: {
+                data: ticketTiers,
+              },
+            },
+          },
+        });
+      }
     });
 
     return res.status(201).json({
@@ -157,6 +226,7 @@ export const updateEvent = async (req: Request, res: Response) => {
       endDate,
       duration,
       ticketTiers,
+      discountEvent,
     }: UpdateEventPayload = req.body;
 
     const parsedId = parseInt(id);
@@ -217,7 +287,7 @@ export const updateEvent = async (req: Request, res: Response) => {
     const dateEnd = new Date(endDate);
 
     const transactionEvent = await prisma.$transaction(async (prisma) => {
-      if (!ticketTiers) {
+      if (!ticketTiers && !discountEvent) {
         return await prisma.event.update({
           where: {
             id: eventWithId.id,
@@ -237,31 +307,105 @@ export const updateEvent = async (req: Request, res: Response) => {
         });
       }
 
-      await prisma.event.update({
-        where: {
-          id: eventWithId.id,
-        },
-        data: {
-          title,
-          description,
-          location,
-          category,
-          image,
-          price,
-          seats,
-          startDate: dateStart,
-          endDate: dateEnd,
-          duration,
-          TicketTier: {
-            deleteMany: {
-              eventId: eventWithId.id,
-            },
-            createMany: {
-              data: ticketTiers,
+      if (!ticketTiers && discountEvent) {
+        const discountStartDate = new Date(discountEvent.discountStartDate);
+        const discountEndDate = new Date(discountEvent.discountEndDate);
+        await prisma.event.update({
+          where: {
+            id: eventWithId.id,
+          },
+          data: {
+            title,
+            description,
+            location,
+            category,
+            image,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            discount: {
+              delete: {
+                eventId: eventWithId.id,
+              },
+              create: {
+                discount: discountEvent.discount,
+                discountEndDate: discountEndDate,
+                discountStartDate: discountStartDate,
+              },
             },
           },
-        },
-      });
+        });
+      }
+
+      if (!discountEvent && ticketTiers) {
+        return await prisma.event.update({
+          where: {
+            id: eventWithId.id,
+          },
+          data: {
+            title,
+            description,
+            location,
+            category,
+            image,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            TicketTier: {
+              deleteMany: {
+                eventId: eventWithId.id,
+              },
+              createMany: {
+                data: ticketTiers,
+              },
+            },
+          },
+        });
+      }
+
+      if (discountEvent && ticketTiers) {
+        const discountStartDate = new Date(discountEvent.discountStartDate);
+        const discountEndDate = new Date(discountEvent.discountEndDate);
+        return await prisma.event.update({
+          where: {
+            id: eventWithId.id,
+          },
+          data: {
+            title,
+            description,
+            location,
+            category,
+            image,
+            price,
+            seats,
+            startDate: dateStart,
+            endDate: dateEnd,
+            duration,
+            discount: {
+              delete: {
+                eventId: eventWithId.id,
+              },
+              create: {
+                discount: discountEvent.discount,
+                discountEndDate: discountEndDate,
+                discountStartDate: discountStartDate,
+              },
+            },
+            TicketTier: {
+              deleteMany: {
+                eventId: eventWithId.id,
+              },
+              createMany: {
+                data: ticketTiers,
+              },
+            },
+          },
+        });
+      }
     });
 
     return res.status(200).json({
@@ -348,7 +492,13 @@ export const deleteEvent = async (req: Request, res: Response) => {
       },
     });
 
-    const deleteDiscount = prisma.discount.deleteMany({
+    const deleteDiscount = prisma.discount.delete({
+      where: {
+        eventId: eventWithId.id,
+      },
+    });
+
+    const deleteEventPromotion = prisma.eventPromotion.delete({
       where: {
         eventId: eventWithId.id,
       },
@@ -366,6 +516,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
       deleteEventReview,
       deleteDiscount,
       deletedEvent,
+      deleteEventPromotion,
     ]);
 
     return res.status(200).json({
@@ -641,6 +792,43 @@ export const postEventReview = async (req: Request, res: Response) => {
         eventId: parsedEventId,
         userId: parsedUserId,
       },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getEventId = async (req: Request, res: Response) => {
+  try {
+    const { eventId } = req.params;
+    const parsedId = parseInt(eventId);
+    const event = await prisma.event.findUnique({
+      where: {
+        id: parsedId,
+      },
+      include: {
+        discount: true,
+        TicketTier: true,
+      },
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    return res.status(200).json({
+      code: 200,
+      success: true,
+      data: event,
     });
   } catch (error) {
     console.log(error);

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import HeroImage from '/public/assets/concert1.jpg';
 
 export default function Hero() {
   return (
@@ -21,7 +22,7 @@ export default function Hero() {
           </div>
 
           <Image
-            src="/assets/images/hero.png"
+            src={HeroImage}
             alt="hero"
             width={1000}
             height={1000}

@@ -52,7 +52,7 @@ model Event {
   updatet_at     DateTime        @updatedAt
   EventReview    EventReview[]
   transaction    Transaction[]
-  discount       Discount[]
+  discount       Discount?
   Ticket         Ticket[]
   TicketTier     TicketTier[]
   eventPromotion EventPromotion?
@@ -88,7 +88,7 @@ model Discount {
   discountEndDate   DateTime
   discount          Float
   Event             Event?   @relation(fields: [eventId], references: [id])
-  eventId           Int?
+  eventId           Int      @unique
 }
 
 model TicketTier {

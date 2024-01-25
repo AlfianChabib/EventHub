@@ -14,9 +14,10 @@ export const eventValidator = [
     .withMessage('Start Date is required'),
   body('endDate').notEmpty().isISO8601().withMessage('End Date is required'),
   body('duration').notEmpty().isString().withMessage('Duration is required'),
-  body('ticketTiers').isArray({
+  body('discountEvent').optional().isObject(),
+  body('ticketTiers').optional().isArray({
     min: 1,
-    max: 5,
+    max: 3,
   }),
 
   (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +39,8 @@ export const updateEventValidator = [
   body('startDate').isISO8601().withMessage('Start Date is required'),
   body('endDate').isISO8601().withMessage('End Date is required'),
   body('duration').isString().withMessage('Duration is required'),
-  body('ticketTiers').isArray({
+  body('discountEvent').optional().isObject(),
+  body('ticketTiers').optional().isArray({
     min: 1,
     max: 5,
   }),
