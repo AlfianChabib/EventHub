@@ -1,4 +1,5 @@
 import {
+  getAllProfileUser,
   getEventPromotion,
   getPoint,
   getUserId,
@@ -10,6 +11,7 @@ import { Router } from 'express';
 
 const userRouter: Router = Router();
 
+userRouter.get('/data', authenticationMiddleware, getAllProfileUser);
 userRouter.get('/:id', getUserId);
 userRouter.patch('/', authenticationMiddleware, updateUser);
 userRouter.get('/voucher', authenticationMiddleware, getVoucher);

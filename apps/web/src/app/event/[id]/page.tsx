@@ -89,7 +89,6 @@ export default async function page(props: PageProps) {
         </div>
         <TicketOrder eventData={data} sessionCookie={sessionCookie} />
       </div>
-      <p>{JSON.stringify(data)}</p>
     </section>
   );
 }

@@ -37,7 +37,7 @@ model Point {
 }
 
 model Event {
-  id             Int             @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
   description    String
   category       String
@@ -48,15 +48,15 @@ model Event {
   startDate      DateTime
   endDate        DateTime
   duration       String
-  created_at     DateTime        @default(now())
-  updatet_at     DateTime        @updatedAt
+  created_at     DateTime         @default(now())
+  updatet_at     DateTime         @updatedAt
   EventReview    EventReview[]
   transaction    Transaction[]
   discount       Discount?
   Ticket         Ticket[]
   TicketTier     TicketTier[]
-  eventPromotion EventPromotion?
-  User           User?           @relation(fields: [userId], references: [id])
+  eventPromotion EventPromotion[]
+  User           User?            @relation(fields: [userId], references: [id])
   userId         Int
 }
 

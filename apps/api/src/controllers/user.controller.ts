@@ -35,8 +35,6 @@ export const getUserId = async (req: Request, res: Response) => {
       });
     }
 
-    const { password } = user;
-
     return res.status(200).json({
       code: 200,
       success: true,
@@ -264,6 +262,58 @@ export const getEventPromotion = async (req: Request, res: Response) => {
       success: true,
       message: 'Event promotion retrieved successfully',
       data: eventPromotion,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getAllProfileUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.body;
+    const parsedId = parseInt(id);
+
+    if (!parsedId || isNaN(parsedId)) {
+      return res.status(400).json({
+        code: 400,
+        success: false,
+        message: 'Invalid ID, please provide a valid ID',
+      });
+    }
+
+    const userWithId = await prisma.user.findUnique({
+      where: {
+        id: parsedId,
+      },
+      include: {
+        point: true,
+        tickets: true,
+        voucher: true,
+        eventPromotion: true,
+      },
+    });
+
+    if (!userWithId) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      code: 200,
+      success: true,
+      message: 'User profile retrieved successfully',
+      data: {
+        ...userWithId,
+        password: '**********',
+      },
     });
   } catch (error) {
     console.log(error);

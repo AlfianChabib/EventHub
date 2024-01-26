@@ -2,14 +2,16 @@ import { generateReferral } from '@/common/helpers/referral.helper';
 import prisma from '@/prisma';
 import { Request, Response } from 'express';
 
-interface InputPayload {
-  eventId: number;
-  quantity: number;
-  count: number;
-  pointId?: number;
-  voucherId?: number;
-  eventReferralCode?: string;
+interface OrderData {
   ticketTierId?: number;
+  referralCode?: string;
+  voucherId?: number;
+  points: Point[];
+  eventId: number;
+}
+
+interface Point {
+  pointId: number;
 }
 
 export const orderEvent = async (req: Request, res: Response) => {
@@ -17,13 +19,11 @@ export const orderEvent = async (req: Request, res: Response) => {
     const { id } = req.body;
     const {
       eventId,
-      quantity,
-      count,
-      pointId,
       voucherId,
-      eventReferralCode,
       ticketTierId,
-    }: InputPayload = req.body;
+      points,
+      referralCode,
+    }: OrderData = req.body;
     const parsedId = parseInt(id);
 
     if (!parsedId || isNaN(parsedId)) {
@@ -37,6 +37,10 @@ export const orderEvent = async (req: Request, res: Response) => {
     const userWithId = await prisma.user.findUnique({
       where: {
         id: parsedId,
+      },
+      include: {
+        voucher: true,
+        point: true,
       },
     });
 
@@ -52,6 +56,10 @@ export const orderEvent = async (req: Request, res: Response) => {
       where: {
         id: eventId,
       },
+      include: {
+        TicketTier: true,
+        eventPromotion: true,
+      },
     });
 
     if (!eventWithId) {
@@ -61,6 +69,81 @@ export const orderEvent = async (req: Request, res: Response) => {
         message: 'Event not found',
       });
     }
+
+    if (!eventWithId.eventPromotion) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Event promotion not found',
+      });
+    }
+
+    if (!eventWithId.TicketTier) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Ticket tier not found',
+      });
+    }
+
+    if (!eventWithId.eventPromotion) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Event promotion not found',
+      });
+    }
+
+    if (!userWithId.point) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Point not found',
+      });
+    }
+
+    const calcTotalAmount = (): number => {
+      let result = eventWithId.price;
+      if (ticketTierId) {
+        const ticketTier = eventWithId.TicketTier.find(
+          (t) => t.id === ticketTierId,
+        );
+        if (ticketTier) {
+          result = ticketTier.price;
+        }
+      }
+
+      if (voucherId) {
+        const voucher = userWithId.voucher.find((v) => v.id === voucherId);
+
+        if (voucher) {
+          result = result - 10000;
+        }
+      }
+
+      if (points) {
+        let i = 0;
+        while (i < points.length) {
+          const point = userWithId.point.find(
+            (p) => p.id === points[i].pointId,
+          );
+          if (point) {
+            result = result - 10000;
+          }
+        }
+      }
+
+      if (referralCode) {
+        const eventPromotion = eventWithId.eventPromotion.find(
+          (ep) => ep.code === referralCode,
+        );
+        if (eventPromotion) {
+          result = result - eventPromotion.discount;
+        }
+      }
+
+      return result;
+    };
 
     const generateEventReferralCode = generateReferral(eventWithId.title);
 
@@ -73,26 +156,15 @@ export const orderEvent = async (req: Request, res: Response) => {
       });
     }
 
-    if (!pointId && !voucherId && !eventReferralCode && !ticketTierId) {
+    if (!points && !voucherId && !referralCode && !ticketTierId) {
       const order = await prisma.$transaction(async (prisma) => {
         await prisma.transaction.create({
           data: {
             userId: userWithId.id,
             eventId: eventId,
-            totalAmount: quantity,
+            totalAmount: eventWithId.price,
           },
         });
-
-        if (count > 1) {
-          await prisma.ticket.createMany({
-            data: Array(count).fill({
-              userId: userWithId.id,
-              eventId: eventId,
-              eventTitle: eventWithId.title,
-              eventDate: eventWithId.startDate,
-            }),
-          });
-        }
 
         await prisma.ticket.create({
           data: {
@@ -121,29 +193,34 @@ export const orderEvent = async (req: Request, res: Response) => {
       });
     }
 
-    // const pointWithId = await prisma.point.findMany({
-    //   where: {
-    //     id: parsedId,
-    //   },
-    // });
+    const order = await prisma.$transaction(async (prisma) => {
+      await prisma.transaction.create({
+        data: {
+          userId: userWithId.id,
+          eventId: eventId,
+          totalAmount: calcTotalAmount(),
+        },
+      });
 
-    // const voucherWithId = await prisma.voucher.findUnique({
-    //   where: {
-    //     id: voucherId,
-    //   },
-    // });
+      await prisma.ticket.create({
+        data: {
+          userId: userWithId.id,
+          eventId: eventWithId.id,
+          eventTitle: eventWithId.title,
+          eventDate: eventWithId.startDate,
+        },
+      });
 
-    // const ticketTierWithId = await prisma.ticketTier.findUnique({
-    //   where: {
-    //     id: ticketTierId,
-    //   },
-    // });
-
-    // const eventReferralCodeWithId = await prisma.eventPromotion.findUnique({
-    //   where: {
-    //     code: eventReferralCode,
-    //   },
-    // });
+      await prisma.eventPromotion.create({
+        data: {
+          userId: userWithId.id,
+          eventId: eventId,
+          code: generateEventReferralCode,
+          count: 5,
+          discount: 10000,
+        },
+      });
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({

@@ -1,0 +1,19 @@
+{
+  "data": {
+    "id": 1,
+    "name": "Admin admin admin admin",
+    "username": "admin",
+    "email": "admin@gmail.com",
+    "password": "**********",
+    "referral": "ADMINE8WB5",
+    "phone": null,
+    "image": null,
+    "role": "event-organizer",
+    "created_at": "2024-01-21T15:24:04.010Z",
+    "updated_at": "2024-01-24T13:57:17.247Z",
+    "point": [],
+    "tickets": [],
+    "voucher": [],
+    "eventPromotion": []
+  }
+}
