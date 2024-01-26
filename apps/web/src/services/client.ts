@@ -99,25 +99,3 @@ export const getProfileUser = async (
 };
 
 // : Promise<EventDataResponse[] | undefined>
-
-export const getEventByUserSession = async (userToken: string | undefined) => {
-  try {
-    if (!userToken) {
-      return undefined;
-    } else {
-      const response = await axios
-        .get('http://localhost:8000/api/event/management', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userToken}`,
-          },
-        })
-        .then((res) => res.data)
-        .catch((err) => console.log(err));
-
-      return response.data;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};

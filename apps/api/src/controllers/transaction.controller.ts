@@ -96,18 +96,19 @@ export const orderEvent = async (req: Request, res: Response) => {
       }
 
       if (voucherId) {
-        const voucher = userWithId.voucher.find((v) => v.id === voucherId);
-
-        if (voucher) {
-          result = result - 10000;
+        if (
+          userWithId.voucher.find((v) => v.id === voucherId) &&
+          userWithId.voucher.find((v) => v.expireDate > new Date())
+        ) {
+          result -= 10000;
         }
       }
 
       if (points) {
         points.forEach((p) => {
           userWithId.point.forEach((point) => {
-            if (point.id === p) {
-              result = result - 10000;
+            if (point.id === p && point.expireDate > new Date()) {
+              result -= 10000;
             }
           });
         });
@@ -115,74 +116,25 @@ export const orderEvent = async (req: Request, res: Response) => {
 
       if (referralCode) {
         eventWithId.eventPromotion.forEach((ep) => {
-          if (ep.code === referralCode) {
+          if (ep.code === referralCode && ep.count > 0) {
             result -= 10000;
           }
         });
       }
 
       if (eventWithId.discount) {
-        result -= eventWithId.discount.discount;
+        if (
+          eventWithId.discount.discountStartDate < new Date() &&
+          eventWithId.discount.discountEndDate > new Date()
+        ) {
+          result -= eventWithId.discount.discount;
+        }
       }
 
       return result;
     };
 
     const generateEventReferralCode = generateReferral(eventWithId.title);
-
-    // if (!points && !voucherId && !referralCode && !ticketTierId) {
-    //   const order = await prisma.$transaction(async (prisma) => {
-    //     const addTransaction = await prisma.transaction.create({
-    //       data: {
-    //         userId: userWithId.id,
-    //         eventId: eventId,
-    //         totalAmount: calcTotalAmount(),
-    //       },
-    //     });
-
-    //     const addTicket = await prisma.ticket.create({
-    //       data: {
-    //         userId: userWithId.id,
-    //         eventId: eventId,
-    //         eventTitle: eventWithId.title,
-    //         eventDate: eventWithId.startDate,
-    //       },
-    //     });
-
-    //     const addEventPromotion = await prisma.eventPromotion.create({
-    //       data: {
-    //         userId: userWithId.id,
-    //         eventId: eventId,
-    //         code: generateEventReferralCode,
-    //         count: 5,
-    //         discount: 10000,
-    //       },
-    //     });
-
-    //     const updateEvent = await prisma.event.update({
-    //       where: {
-    //         id: eventWithId.id,
-    //       },
-    //       data: {
-    //         seats: eventWithId.seats - 1,
-    //       },
-    //     });
-
-    //     return {
-    //       addTransaction,
-    //       addTicket,
-    //       addEventPromotion,
-    //       updateEvent,
-    //     };
-    //   });
-
-    //   return res.status(200).json({
-    //     code: 200,
-    //     success: true,
-    //     message: 'Order successfully',
-    //     data: order.addTransaction,
-    //   });
-    // }
 
     const order = await prisma.$transaction(async (prisma) => {
       const addTransaction = await prisma.transaction.create({
@@ -192,6 +144,7 @@ export const orderEvent = async (req: Request, res: Response) => {
           totalAmount: calcTotalAmount(),
         },
       });
+
       const addTicket = await prisma.ticket.create({
         data: {
           userId: userWithId.id,
@@ -201,18 +154,40 @@ export const orderEvent = async (req: Request, res: Response) => {
         },
       });
 
+      if (
+        ticketTierId &&
+        eventWithId.TicketTier.find((t) => t.id === ticketTierId)
+      ) {
+        await prisma.ticket.update({
+          where: {
+            id: addTicket.id,
+          },
+          data: {
+            ticketTier: {
+              connect: {
+                id: ticketTierId,
+              },
+            },
+          },
+        });
+      }
+
       const updateEvent = await prisma.event.update({
         where: {
           id: eventWithId.id,
         },
         data: {
-          seats: eventWithId.seats - 1,
+          seats: {
+            decrement: 1,
+          },
         },
       });
 
       if (
         referralCode &&
-        eventWithId.eventPromotion.find((ep) => ep.code === referralCode)
+        eventWithId.eventPromotion.find(
+          (ep) => ep.code === referralCode && ep.count > 0,
+        )
       ) {
         await prisma.eventPromotion.update({
           where: {
@@ -221,6 +196,17 @@ export const orderEvent = async (req: Request, res: Response) => {
           data: {
             count: {
               decrement: 1,
+            },
+          },
+        });
+      }
+
+      if (points) {
+        const deletePoint = await prisma.point.deleteMany({
+          where: {
+            userId: userWithId.id,
+            id: {
+              in: points,
             },
           },
         });

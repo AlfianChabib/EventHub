@@ -10,9 +10,9 @@ import {
   createEvent,
   deleteEvent,
   getAllEvent,
-  getAllEventSession,
   getEventById,
   getEventId,
+  getEventSession,
   updateEvent,
 } from '@/controllers/event.controller';
 
@@ -39,7 +39,7 @@ eventRouter.delete(
 
 eventRouter.get('/management/:eventId', authenticationMiddleware, getEventById);
 
-eventRouter.get('/management', authenticationMiddleware, getAllEventSession);
+eventRouter.get('/management', authenticationMiddleware, getEventSession);
 
 eventRouter.post('/image-upload', upload.single('image'), imageUploader);
 

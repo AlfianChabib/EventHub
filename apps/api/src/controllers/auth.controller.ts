@@ -218,10 +218,20 @@ export const signoutUser = async (req: Request, res: Response) => {
 export const getSessionUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
+    const parsedId = parseInt(id);
 
     const user = await prisma.user.findUnique({
       where: {
-        id,
+        id: parsedId,
+      },
+      include: {
+        event: true,
+        point: true,
+        transaction: true,
+        tickets: true,
+        voucher: true,
+        eventPromotion: true,
+        EventReview: true,
       },
     });
 

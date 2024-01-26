@@ -1,5 +1,5 @@
 'use client';
-import { getEventByUserSession, getSessionClient } from '@/services/client';
+import { getSessionClient } from '@/services/client';
 import React, { useEffect, useState } from 'react';
 import {
   Card,
@@ -42,13 +42,6 @@ interface MainContentProps {
 export default function Dashboard(props: MainContentProps) {
   const { sessionCookie } = props;
   const [sessionData, setSessionData] = useState<any>({});
-  const [eventData, setEventData] = useState<any>([]);
-
-  useEffect(() => {
-    getEventByUserSession(sessionCookie).then((data) => {
-      if (data) setEventData(data);
-    });
-  }, [sessionCookie]);
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -56,7 +49,6 @@ export default function Dashboard(props: MainContentProps) {
     });
   }, [sessionCookie]);
 
-  console.log(eventData);
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
@@ -64,14 +56,11 @@ export default function Dashboard(props: MainContentProps) {
       </h1>
       <ScrollArea className="h-full">
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-          </div>
+          <div className="flex items-center justify-between space-y-2"></div>
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">
-                Analytics
-              </TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
@@ -129,7 +118,9 @@ export default function Dashboard(props: MainContentProps) {
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Event</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Total Event
+                    </CardTitle>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"

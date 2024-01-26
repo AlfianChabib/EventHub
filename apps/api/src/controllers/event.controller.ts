@@ -540,12 +540,21 @@ export const getEventById = async (req: Request, res: Response) => {
     const { id } = req.body;
     const { eventId } = req.params;
     const parsedId = parseInt(id);
+    const parsedEventId = parseInt(eventId);
 
     if (!parsedId || isNaN(parsedId)) {
       return res.status(400).json({
         code: 400,
         success: false,
         message: 'Invalid ID, please provide a valid ID',
+      });
+    }
+
+    if (!parsedEventId || isNaN(parsedEventId)) {
+      return res.status(400).json({
+        code: 400,
+        success: false,
+        message: 'Invalid event ID, please provide a valid event ID',
       });
     }
 
@@ -565,7 +574,7 @@ export const getEventById = async (req: Request, res: Response) => {
 
     const eventWithId = await prisma.event.findUnique({
       where: {
-        id: parseInt(eventId),
+        id: parsedEventId,
       },
     });
 
@@ -577,7 +586,7 @@ export const getEventById = async (req: Request, res: Response) => {
       });
     }
 
-    if (eventWithId.userId !== userWithId.id) {
+    if (eventWithId.id !== userWithId.id) {
       return res.status(403).json({
         code: 403,
         success: false,
@@ -601,22 +610,17 @@ export const getEventById = async (req: Request, res: Response) => {
 };
 
 // Get all event admin or event organizer only
-export const getAllEventSession = async (req: Request, res: Response) => {
+export const getEventSession = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
     const parsedId = parseInt(id);
 
-    if (!parsedId || isNaN(parsedId)) {
-      return res.status(400).json({
-        code: 400,
-        success: false,
-        message: 'Invalid ID, please provide a valid ID',
-      });
-    }
-
     const userWithId = await prisma.user.findUnique({
       where: {
-        id: parsedId,
+        id: id,
+      },
+      include: {
+        event: true,
       },
     });
 
@@ -628,16 +632,10 @@ export const getAllEventSession = async (req: Request, res: Response) => {
       });
     }
 
-    const events = await prisma.event.findMany({
-      where: {
-        userId: userWithId.id,
-      },
-    });
-
     return res.status(200).json({
       code: 200,
       success: true,
-      data: events,
+      data: userWithId.event,
     });
   } catch (error) {
     console.log(error);

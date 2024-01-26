@@ -160,6 +160,7 @@ export default function TicketOrder(props: Props) {
               <Button type="submit">Apply</Button>
             </div>
           </form>
+
           <Button onClick={handleOrder}>Order ticket</Button>
         </div>
       ) : null}

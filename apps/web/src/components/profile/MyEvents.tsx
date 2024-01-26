@@ -1,5 +1,5 @@
 'use client';
-import { getEventByUserSession, getSessionClient } from '@/services/client';
+import { EventDataResponse, getSessionClient } from '@/services/client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import {
@@ -11,22 +11,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 
 interface MainContentProps {
   sessionCookie: string | undefined;
 }
 
-export default function ProfileInfo(props: MainContentProps) {
+export default function EventProfile(props: MainContentProps) {
   const { sessionCookie } = props;
   const [sessionData, setSessionData] = useState<any>({});
-  const [eventData, setEventData] = useState<any>([]);
-
-  useEffect(() => {
-    getEventByUserSession(sessionCookie).then((data) => {
-      if (data) setEventData(data);
-    });
-  }, [sessionCookie]);
+  const { event } = sessionData;
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -34,12 +28,18 @@ export default function ProfileInfo(props: MainContentProps) {
     });
   }, [sessionCookie]);
 
-  console.log(eventData);
+  const formatDate = (date: string) => {
+    const d = new Date(date);
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  };
+
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">List of your Events</h1>
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
+        List of your Events
+      </h1>
       <div className="flex w-full">
-          <Table>
+        <Table>
           {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
           <TableHeader>
             <TableRow>
@@ -51,12 +51,12 @@ export default function ProfileInfo(props: MainContentProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {eventData.map((event: any) => (
+            {event?.map((event: any) => (
               <TableRow key={event.id}>
                 <TableCell className="font-medium">{event.title}</TableCell>
                 <TableCell>{event.category}</TableCell>
-                <TableCell>{event.startDate}</TableCell>
-                <TableCell>{event.endDate}</TableCell>
+                <TableCell>{formatDate(event.startDate)}</TableCell>
+                <TableCell>{formatDate(event.endDate)}</TableCell>
                 <TableCell>{event.status}</TableCell>
               </TableRow>
             ))}
