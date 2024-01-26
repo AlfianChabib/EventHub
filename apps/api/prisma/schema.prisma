@@ -77,7 +77,7 @@ model EventPromotion {
   code     String @unique
   discount Float
   event    Event? @relation(fields: [eventId], references: [id])
-  eventId  Int    @unique
+  eventId  Int?
   User     User?  @relation(fields: [userId], references: [id])
   userId   Int?
 }

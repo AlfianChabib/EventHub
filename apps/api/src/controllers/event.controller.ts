@@ -498,7 +498,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
       },
     });
 
-    const deleteEventPromotion = prisma.eventPromotion.delete({
+    const deleteEventPromotion = prisma.eventPromotion.deleteMany({
       where: {
         eventId: eventWithId.id,
       },

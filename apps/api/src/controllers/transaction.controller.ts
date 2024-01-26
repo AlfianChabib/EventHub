@@ -6,12 +6,8 @@ interface OrderData {
   ticketTierId?: number;
   referralCode?: string;
   voucherId?: number;
-  points: Point[];
+  points?: number[];
   eventId: number;
-}
-
-interface Point {
-  pointId: number;
 }
 
 export const orderEvent = async (req: Request, res: Response) => {
@@ -41,6 +37,7 @@ export const orderEvent = async (req: Request, res: Response) => {
       include: {
         voucher: true,
         point: true,
+        eventPromotion: true,
       },
     });
 
@@ -59,6 +56,7 @@ export const orderEvent = async (req: Request, res: Response) => {
       include: {
         TicketTier: true,
         eventPromotion: true,
+        discount: true,
       },
     });
 
@@ -70,35 +68,19 @@ export const orderEvent = async (req: Request, res: Response) => {
       });
     }
 
-    if (!eventWithId.eventPromotion) {
-      return res.status(404).json({
-        code: 404,
-        success: false,
-        message: 'Event promotion not found',
-      });
-    }
+    const eventPromotionWithId = await prisma.eventPromotion.findFirst({
+      where: {
+        eventId: eventWithId.id,
+        userId: userWithId.id,
+      },
+    });
 
-    if (!eventWithId.TicketTier) {
-      return res.status(404).json({
-        code: 404,
+    const expiredEvent = new Date(eventWithId.startDate);
+    if (expiredEvent < new Date()) {
+      return res.status(400).json({
+        code: 400,
         success: false,
-        message: 'Ticket tier not found',
-      });
-    }
-
-    if (!eventWithId.eventPromotion) {
-      return res.status(404).json({
-        code: 404,
-        success: false,
-        message: 'Event promotion not found',
-      });
-    }
-
-    if (!userWithId.point) {
-      return res.status(404).json({
-        code: 404,
-        success: false,
-        message: 'Point not found',
+        message: 'Event has expired',
       });
     }
 
@@ -122,24 +104,25 @@ export const orderEvent = async (req: Request, res: Response) => {
       }
 
       if (points) {
-        let i = 0;
-        while (i < points.length) {
-          const point = userWithId.point.find(
-            (p) => p.id === points[i].pointId,
-          );
-          if (point) {
-            result = result - 10000;
-          }
-        }
+        points.forEach((p) => {
+          userWithId.point.forEach((point) => {
+            if (point.id === p) {
+              result = result - 10000;
+            }
+          });
+        });
       }
 
       if (referralCode) {
-        const eventPromotion = eventWithId.eventPromotion.find(
-          (ep) => ep.code === referralCode,
-        );
-        if (eventPromotion) {
-          result = result - eventPromotion.discount;
-        }
+        eventWithId.eventPromotion.forEach((ep) => {
+          if (ep.code === referralCode) {
+            result -= 10000;
+          }
+        });
+      }
+
+      if (eventWithId.discount) {
+        result -= eventWithId.discount.discount;
       }
 
       return result;
@@ -147,62 +130,69 @@ export const orderEvent = async (req: Request, res: Response) => {
 
     const generateEventReferralCode = generateReferral(eventWithId.title);
 
-    const expiredEvent = new Date(eventWithId.startDate).getTime();
-    if (expiredEvent < new Date().getTime()) {
-      return res.status(400).json({
-        code: 400,
-        success: false,
-        message: 'Event has expired',
-      });
-    }
+    // if (!points && !voucherId && !referralCode && !ticketTierId) {
+    //   const order = await prisma.$transaction(async (prisma) => {
+    //     const addTransaction = await prisma.transaction.create({
+    //       data: {
+    //         userId: userWithId.id,
+    //         eventId: eventId,
+    //         totalAmount: calcTotalAmount(),
+    //       },
+    //     });
 
-    if (!points && !voucherId && !referralCode && !ticketTierId) {
-      const order = await prisma.$transaction(async (prisma) => {
-        await prisma.transaction.create({
-          data: {
-            userId: userWithId.id,
-            eventId: eventId,
-            totalAmount: eventWithId.price,
-          },
-        });
+    //     const addTicket = await prisma.ticket.create({
+    //       data: {
+    //         userId: userWithId.id,
+    //         eventId: eventId,
+    //         eventTitle: eventWithId.title,
+    //         eventDate: eventWithId.startDate,
+    //       },
+    //     });
 
-        await prisma.ticket.create({
-          data: {
-            userId: userWithId.id,
-            eventId: eventId,
-            eventTitle: eventWithId.title,
-            eventDate: eventWithId.startDate,
-          },
-        });
+    //     const addEventPromotion = await prisma.eventPromotion.create({
+    //       data: {
+    //         userId: userWithId.id,
+    //         eventId: eventId,
+    //         code: generateEventReferralCode,
+    //         count: 5,
+    //         discount: 10000,
+    //       },
+    //     });
 
-        await prisma.eventPromotion.create({
-          data: {
-            userId: userWithId.id,
-            eventId: eventId,
-            code: generateEventReferralCode,
-            count: 5,
-            discount: 10000,
-          },
-        });
+    //     const updateEvent = await prisma.event.update({
+    //       where: {
+    //         id: eventWithId.id,
+    //       },
+    //       data: {
+    //         seats: eventWithId.seats - 1,
+    //       },
+    //     });
 
-        return res.status(200).json({
-          code: 200,
-          success: true,
-          message: 'Order successfully',
-        });
-      });
-    }
+    //     return {
+    //       addTransaction,
+    //       addTicket,
+    //       addEventPromotion,
+    //       updateEvent,
+    //     };
+    //   });
+
+    //   return res.status(200).json({
+    //     code: 200,
+    //     success: true,
+    //     message: 'Order successfully',
+    //     data: order.addTransaction,
+    //   });
+    // }
 
     const order = await prisma.$transaction(async (prisma) => {
-      await prisma.transaction.create({
+      const addTransaction = await prisma.transaction.create({
         data: {
           userId: userWithId.id,
           eventId: eventId,
           totalAmount: calcTotalAmount(),
         },
       });
-
-      await prisma.ticket.create({
+      const addTicket = await prisma.ticket.create({
         data: {
           userId: userWithId.id,
           eventId: eventWithId.id,
@@ -211,15 +201,51 @@ export const orderEvent = async (req: Request, res: Response) => {
         },
       });
 
+      const updateEvent = await prisma.event.update({
+        where: {
+          id: eventWithId.id,
+        },
+        data: {
+          seats: eventWithId.seats - 1,
+        },
+      });
+
+      if (
+        referralCode &&
+        eventWithId.eventPromotion.find((ep) => ep.code === referralCode)
+      ) {
+        await prisma.eventPromotion.update({
+          where: {
+            code: referralCode,
+          },
+          data: {
+            count: {
+              decrement: 1,
+            },
+          },
+        });
+      }
+
+      if (eventPromotionWithId) return { addTransaction };
+
       await prisma.eventPromotion.create({
         data: {
           userId: userWithId.id,
-          eventId: eventId,
+          eventId: eventWithId.id,
           code: generateEventReferralCode,
           count: 5,
           discount: 10000,
         },
       });
+
+      return { addTransaction };
+    });
+
+    return res.status(200).json({
+      code: 200,
+      success: true,
+      message: 'Order successfully',
+      data: order.addTransaction,
     });
   } catch (error) {
     console.log(error);
