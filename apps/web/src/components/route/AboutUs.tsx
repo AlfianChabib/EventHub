@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function AboutUs() {
   return (
-    <div>
-      <h1>About EventHub</h1>
+    <div className="w-full p-4 border rounded-md">
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center my-10">About EventHub</h1>
       <p>
         Welcome to EventHub, your premier destination for all things events! At
         EventHub, we strive to create a seamless and enjoyable experience for

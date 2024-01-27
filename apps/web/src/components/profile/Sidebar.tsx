@@ -80,6 +80,7 @@ export default function Sidebar(props: SidebarProps) {
             <Separator />
             <div className="flex gap-4 p-2 items-center justify-center">
               <CardDescription className="font-semibold">
+                {/* Point : <span>{sessionData?.point}</span> */}
                 Point : <span>0</span>
               </CardDescription>
             </div>

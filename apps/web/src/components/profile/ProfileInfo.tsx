@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '../ui/label';
 
 interface MainContentProps {
@@ -33,8 +34,12 @@ export default function ProfileInfo(props: MainContentProps) {
       </h1>
       <Card>
         <CardHeader>
-          <CardTitle>Avatar</CardTitle>
-          <CardDescription>Avatar</CardDescription>
+          {/* <CardTitle>Avatar</CardTitle>
+          <CardDescription>Avatar</CardDescription> */}
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="flex items-center justify-between space-x-2">
