@@ -13,6 +13,7 @@ export interface SessionData {
   phone?: string;
   created_at: string;
   updated_at: string;
+  // point: number;
 }
 
 interface EventData {

@@ -17,7 +17,7 @@ interface MainContentProps {
   sessionCookie: string | undefined;
 }
 
-export default function EventProfile(props: MainContentProps) {
+export default function MyEvents(props: MainContentProps) {
   const { sessionCookie } = props;
   const [sessionData, setSessionData] = useState<any>({});
   const { event } = sessionData;
@@ -36,7 +36,7 @@ export default function EventProfile(props: MainContentProps) {
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
-        List of your Events
+        My Events List
       </h1>
       <div className="flex w-full">
         <Table>

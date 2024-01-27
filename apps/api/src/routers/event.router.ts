@@ -18,7 +18,7 @@ import {
 
 const eventRouter: Router = Router();
 
-eventRouter.get('/', getAllEvent);
+eventRouter.get('/events', getAllEvent);
 
 eventRouter.get('/:eventId', getEventId);
 

@@ -31,23 +31,25 @@ export default function Hero() {
         <div className="flex w-full flex-col gap-5 md:flex-row">
           Search Category Filter
         </div> */}
-        <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
-          Explore the Journey with Us!
-        </h1>
-        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-4">
-          <EventCard />
-          <EventCard />
-          <EventCard />
-          <EventCard />
-          <EventCard />
-          <EventCard />
-          <EventCard />
-          <EventCard />
-        </div>
-        <div className="flex items-center justify-center">
-          <Button size="lg" asChild className="button w-full sm:w-fit">
-            <Link href="#events">Explore Now</Link>
-          </Button>
+        <div className="w-full px-4 border rounded-md">
+          <h1 className="text-3xl font-semibold text-center flex items-center justify-center my-10">
+            Explore the Journey with Us!
+          </h1>
+          <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-4">
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+          </div>
+          <div className="flex items-center justify-center my-10">
+            <Button size="lg" asChild className="button w-full sm:w-fit">
+              <Link href="#events">Explore Now</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </>
