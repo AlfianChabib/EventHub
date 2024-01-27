@@ -38,21 +38,33 @@ export interface ProfileUser {
   email: string;
   password: string;
   referral: string;
-  phone: null;
-  image: null;
+  phone: string;
+  image: string;
   role: string;
   created_at: string;
   updated_at: string;
-  point: any[];
+  point: Point[];
   tickets: any[];
-  voucher: any[];
+  voucher: Voucher[];
   eventPromotion: any[];
+}
+
+interface Point {
+  id: number;
+  userId: number;
+  expireDate: Date;
+}
+
+interface Voucher {
+  id: number;
+  userId: number;
+  expireDate: Date;
 }
 
 // : Promise<object | undefined>
 export const getSessionClient = async (
   userToken: string | undefined,
-): Promise<SessionData | undefined> => {
+): Promise<ProfileUser | undefined> => {
   try {
     if (!userToken) {
       return undefined;

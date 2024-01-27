@@ -13,7 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { Select } from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 interface Props {
   eventData: EventData;
@@ -24,18 +30,19 @@ interface OrderData {
   ticketTierId?: number;
   referralCode?: string;
   voucherId?: number;
-  point: number;
+  point: number[];
   eventId: number;
 }
 
 export default function TicketOrder(props: Props) {
   const { eventData, sessionCookie } = props;
 
-  const [sessionData, setSessionData] = useState<SessionData | null>(null);
+  const [sessionData, setSessionData] = useState<ProfileUser | null>(null);
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [openOrder, setOpenOrder] = useState<boolean>(false);
+  const [openPoint, setOpenPoint] = useState<boolean>(false);
   const [orderData, setOrderData] = useState<OrderData>({
-    point: 0,
+    point: [],
     voucherId: 0,
     referralCode: '',
     ticketTierId: 0,
@@ -79,7 +86,7 @@ export default function TicketOrder(props: Props) {
   };
 
   return (
-    <div className="flex md:relative absolute bottom-0 flex-col md:max-w-96 w-full border rounded-xl p-2 gap-2">
+    <div className="flex md:relative absolute bottom-0 bg-background flex-col md:max-w-96 w-full border rounded-xl p-2 gap-2">
       <div className="flex text-lg font-bold">
         {eventData.discount.discount > 0 ? (
           <div className="flex w-full gap-2 items-center justify-center">
@@ -153,6 +160,19 @@ export default function TicketOrder(props: Props) {
               </div>
             ))}
           </RadioGroup>
+          {!openPoint ? (
+            <div className="flex w-full justify-between items-center py-2">
+              <p className="font-semibold">
+                You have {profileUser?.point.length} point(s)
+              </p>
+              <Button onClick={() => setOpenPoint(!openPoint)}>
+                Use point
+              </Button>
+            </div>
+          ) : (
+            <Button onClick={() => setOpenPoint(!openPoint)}>Back</Button>
+          )}
+
           <form>
             <Label className="font-semibold">Promotion code (optional)</Label>
             <div className="flex items-center space-x-2">

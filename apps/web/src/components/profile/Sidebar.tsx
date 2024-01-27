@@ -17,7 +17,7 @@ import {
   LayoutDashboard,
   CalendarRange,
 } from 'lucide-react';
-import { SessionData, getSessionClient } from '@/services/client';
+import { ProfileUser, SessionData, getSessionClient } from '@/services/client';
 
 interface SidebarProps {
   sessionCookie: string | undefined;
@@ -26,7 +26,7 @@ interface SidebarProps {
 export default function Sidebar(props: SidebarProps) {
   const { sessionCookie } = props;
   const [isOpen, setIsOpen] = useState(false);
-  const [sessionData, setSessionData] = useState<SessionData | null>(null);
+  const [sessionData, setSessionData] = useState<ProfileUser | null>(null);
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -35,7 +35,7 @@ export default function Sidebar(props: SidebarProps) {
   }, [sessionCookie]);
 
   if (!sessionData) {
-    return;
+    return <div>Loading...</div>;
   }
 
   console.log(sessionData);
@@ -51,8 +51,8 @@ export default function Sidebar(props: SidebarProps) {
 
   return (
     <div
-      className={`lg:flex lg:relative absolute bg-background lg:-translate-x-0 ease-in transition-all flex-col lg:w-[500px] max-w-[500px] min-h-full p-4 gap-4 border rounded-md justify-between z-20 ${
-        isOpen ? '-translate-x-0' : '-translate-x-[380px]'
+      className={`lg:flex lg:relative absolute bg-background lg:-translate-x-0 ease-in transition-all flex-col lg:max-w-[500px] max-w-[500px] min-h-full p-4 gap-4 border rounded-md justify-between z-20 ${
+        isOpen ? '-translate-x-0' : '-translate-x-[320px]'
       } `}
     >
       <Button
@@ -80,7 +80,7 @@ export default function Sidebar(props: SidebarProps) {
             <Separator />
             <div className="flex gap-4 p-2 items-center justify-center">
               <CardDescription className="font-semibold">
-                Point : <span>0</span>
+                Point : <span>{sessionData?.point.length}</span>
               </CardDescription>
             </div>
           </Card>
