@@ -2,12 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { EventData } from '@/app/event/[id]/page';
-import {
-  ProfileUser,
-  SessionData,
-  getProfileUser,
-  getSessionClient,
-} from '@/services/client';
+import { ProfileUser, getProfileUser } from '@/services/client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -16,33 +11,43 @@ import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { orderTransaction } from '@/services/transaction';
 
 interface Props {
   eventData: EventData;
   sessionCookie: string | undefined;
 }
 
-interface OrderData {
+export interface OrderData {
   ticketTierId?: number;
   referralCode?: string;
   voucherId?: number;
-  point: number[];
+  points?: number[];
   eventId: number;
+}
+
+interface Alert {
+  message: string;
+  status: boolean;
 }
 
 export default function TicketOrder(props: Props) {
   const { eventData, sessionCookie } = props;
 
-  const [sessionData, setSessionData] = useState<ProfileUser | null>(null);
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [openOrder, setOpenOrder] = useState<boolean>(false);
   const [openPoint, setOpenPoint] = useState<boolean>(false);
+  const [alert, setAlert] = useState<Alert>({
+    message: '',
+    status: false,
+  });
   const [orderData, setOrderData] = useState<OrderData>({
-    point: [],
+    points: [],
     voucherId: 0,
     referralCode: '',
     ticketTierId: 0,
@@ -50,21 +55,12 @@ export default function TicketOrder(props: Props) {
   });
 
   useEffect(() => {
-    getSessionClient(sessionCookie).then((data) => {
-      if (data) setSessionData(data);
-    });
-  }, [sessionCookie]);
-
-  useEffect(() => {
-    if (sessionData) {
+    if (sessionCookie) {
       getProfileUser(sessionCookie).then((data) => {
         if (data) setProfileUser(data);
       });
     }
-  }, [sessionCookie, sessionData]);
-
-  console.log(profileUser);
-  console.log(eventData);
+  }, [sessionCookie]);
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('id-ID', {
@@ -81,9 +77,43 @@ export default function TicketOrder(props: Props) {
     return formatPrice(price);
   };
 
-  const handleOrder = () => {
-    console.log(orderData);
+  const handlePoint = (e: React.FormEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      point: { value: number };
+    };
+
+    let result: number[] = [];
+    profileUser?.point.forEach((pointuser) => {
+      if (result.length < target.point.value) {
+        result.push(pointuser.id);
+      }
+    });
+    setOrderData({ ...orderData, points: result });
   };
+
+  const handlePromotion = (e: React.FormEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      promotion: { value: string };
+    };
+    setOrderData({ ...orderData, referralCode: target.promotion.value });
+  };
+
+  const handleOrder = async () => {
+    try {
+      const orderResult = await orderTransaction(orderData, sessionCookie);
+
+      if (orderResult.code === 200) {
+        console.log(orderResult);
+        return orderResult;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (!profileUser && !sessionCookie) return null;
 
   return (
     <div className="flex md:relative absolute bottom-0 bg-background flex-col md:max-w-96 w-full border rounded-xl p-2 gap-2">
@@ -99,7 +129,7 @@ export default function TicketOrder(props: Props) {
           <p>{formatPrice(eventData.price)}</p>
         )}
       </div>
-      {!sessionData ? (
+      {!sessionCookie ? (
         <Button className="text-lg text-center font-semibold">
           <Link className="w-full" href="/auth/signin">
             Login to order tickets
@@ -170,13 +200,51 @@ export default function TicketOrder(props: Props) {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => setOpenPoint(!openPoint)}>Back</Button>
+            <div className="flex flex-col w-full justify-between gap-2 py-2">
+              <p className="font-semibold">Point</p>
+              <form onSubmit={handlePoint} className="flex w-full gap-2">
+                <input
+                  type="number"
+                  name="point"
+                  defaultValue={profileUser?.point.length}
+                  min={0}
+                  max={profileUser?.point.length}
+                  className="w-full rounded-lg px-2"
+                />
+                <Button type="submit">Apply</Button>
+              </form>
+            </div>
           )}
 
-          <form>
+          <Select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a Voucher" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {profileUser?.voucher.map((voucher, index) => (
+                  <SelectItem
+                    value={voucher.id.toString()}
+                    key={index}
+                    onClick={() =>
+                      setOrderData({ ...orderData, voucherId: voucher.id })
+                    }
+                  >
+                    Voucher {voucher.id}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <form onSubmit={handlePromotion}>
             <Label className="font-semibold">Promotion code (optional)</Label>
             <div className="flex items-center space-x-2">
-              <Input type="text" placeholder="Enter Promotion code" />
+              <Input
+                type="text"
+                name="promotion"
+                placeholder="Enter Promotion code"
+              />
               <Button type="submit">Apply</Button>
             </div>
           </form>
