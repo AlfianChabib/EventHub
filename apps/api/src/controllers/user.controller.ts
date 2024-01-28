@@ -295,6 +295,8 @@ export const getAllProfileUser = async (req: Request, res: Response) => {
         tickets: true,
         voucher: true,
         eventPromotion: true,
+        event: true,
+        transaction: true,
       },
     });
 
@@ -312,7 +314,7 @@ export const getAllProfileUser = async (req: Request, res: Response) => {
       message: 'User profile retrieved successfully',
       data: {
         ...userWithId,
-        password: '**********',
+        password: '',
       },
     });
   } catch (error) {

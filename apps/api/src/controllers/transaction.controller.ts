@@ -212,6 +212,15 @@ export const orderEvent = async (req: Request, res: Response) => {
         });
       }
 
+      if (voucherId) {
+        const deleteVoucher = await prisma.voucher.delete({
+          where: {
+            userId: userWithId.id,
+            id: voucherId,
+          },
+        });
+      }
+
       if (eventPromotionWithId) return { addTransaction };
 
       await prisma.eventPromotion.create({

@@ -16,7 +16,7 @@ export const eventValidator = [
   body('duration').notEmpty().isString().withMessage('Duration is required'),
   body('discountEvent').optional().isObject(),
   body('ticketTiers').optional().isArray({
-    min: 1,
+    min: 0,
     max: 3,
   }),
 

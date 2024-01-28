@@ -7,22 +7,28 @@ import {
   CardContent,
   CardFooter,
 } from '../ui/card';
-import Image from "next/image";
+import Image from 'next/image';
 import HeroImage from '/public/assets/concert1.jpg';
+import { ProfileUser, Ticket } from '@/services/client';
 
-export default function EventCard() {
+interface Props {
+  profileUser?: ProfileUser | null;
+}
+
+export default function EventCard(props: Props) {
+  const { profileUser } = props;
   return (
     <div>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <Image
-          src={HeroImage}
-          width={500}
-          height={300}
-          objectFit="contain"
-          className="rounded w-full"
-          alt=""
-        />
+          <Image
+            src={HeroImage}
+            width={500}
+            height={300}
+            objectFit="contain"
+            className="rounded w-full"
+            alt=""
+          />
         </CardHeader>
         <CardContent>
           <div>

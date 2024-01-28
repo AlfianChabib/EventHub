@@ -1,3 +1,4 @@
+import { TicketTier } from '@/app/event/[id]/page';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
@@ -45,9 +46,19 @@ export interface ProfileUser {
   created_at: string;
   updated_at: string;
   point: Point[];
-  tickets: any[];
+  event: EventData[];
+  tickets: Ticket[];
   voucher: Voucher[];
   eventPromotion: any[];
+}
+
+export interface Ticket {
+  id: number;
+  eventTitle: string;
+  eventDate: Date;
+  eventId: number;
+  userId: number;
+  ticketTier: TicketTier;
 }
 
 interface Point {

@@ -18,6 +18,7 @@ import {
   CalendarRange,
 } from 'lucide-react';
 import { ProfileUser, SessionData, getSessionClient } from '@/services/client';
+import Link from 'next/link';
 
 interface SidebarProps {
   sessionCookie: string | undefined;
@@ -157,15 +158,14 @@ export default function Sidebar(props: SidebarProps) {
           </div>
         </div>
 
-        <TabsList className="flex flex-col w-full h-20 border">
-          <TabsTrigger
-            value="createProduct"
-            className="flex w-full h-full gap-2"
-            onClick={handleOpenSidebar}
+        <TabsList className="flex w-full h-20 border bg-background mt-2">
+          <Link
+            href={'/create-event'}
+            className="flex items-center justify-center w-full h-full gap-2"
           >
             <PlusSquare />
             <p className="text-xl">Create Event</p>
-          </TabsTrigger>
+          </Link>
         </TabsList>
       </div>
     </div>
