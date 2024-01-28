@@ -7,35 +7,30 @@ import HeroImage from '/public/assets/concert1.jpg';
 export default function Hero() {
   return (
     <>
-      <section className="bg-primary-50 bg-dotted-pattern bg-contain md:pb-10">
-        <div className="mb-10">
+      <section className="">
+        <div className="w-full h-[500px]">
           <Image
             src={HeroImage}
-            alt="hero"
+            alt="hero-image"
             width={2000}
             height={2000}
-            className="max-h-[100vh] 2xl:max-h-[100vh]"
+            priority
+            objectFit="cover"
+            className="w-full h-full rounded-md object-cover object-center"
           />
         </div>
-        <div className="flex items-center justify-center">
-          <h1 className="h1-bold">
+        <div className="flex items-center justify-center my-4">
+          <h1 className="text-xl font-semibold text-center">
             Host, Connect, Celebrate: Your Events, With Our Platform!
           </h1>
         </div>
       </section>
-      <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
-        {/* <h2 className="h2-bold">
-          Trust by <br /> Thousands of Events
-        </h2>
-
-        <div className="flex w-full flex-col gap-5 md:flex-row">
-          Search Category Filter
-        </div> */}
+      <section className="flex flex-col">
         <div className="w-full px-4 border rounded-md">
-          <h1 className="text-3xl font-semibold text-center flex items-center justify-center my-10">
+          <h1 className="text-3xl font-semibold text-center flex items-center justify-center my-4">
             Explore the Journey with Us!
           </h1>
-          <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             <EventCard />
             <EventCard />
             <EventCard />
@@ -47,7 +42,7 @@ export default function Hero() {
           </div>
           <div className="flex items-center justify-center my-10">
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link href="#events">Explore Now</Link>
+              <Link href="/events">Explore Now</Link>
             </Button>
           </div>
         </div>

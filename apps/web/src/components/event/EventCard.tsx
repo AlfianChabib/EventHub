@@ -1,53 +1,62 @@
 import React from 'react';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '../ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import Image from 'next/image';
 import HeroImage from '/public/assets/concert1.jpg';
-import { ProfileUser, Ticket } from '@/services/client';
+import { Separator } from '../ui/separator';
+import { EventData } from '@/@types/event';
 
-interface Props {
-  profileUser?: ProfileUser | null;
+interface EventCardProps {
+  event: EventData;
 }
 
-export default function EventCard(props: Props) {
-  const { profileUser } = props;
+export default function EventCard(props: EventCardProps) {
+  const { event } = props;
+
+  const eventDate = new Date(event.startDate).toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    });
+  };
+
   return (
     <div>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card className="flex flex-col rounded-lg overflow-hidden">
+        <CardHeader className="flex relative p-0">
           <Image
-            src={HeroImage}
+            src={event.image || HeroImage}
             width={500}
             height={300}
-            objectFit="contain"
-            className="rounded w-full"
-            alt=""
+            className="w-full object-cover rounded-lg"
+            alt={event.title}
+            priority
           />
-        </CardHeader>
-        <CardContent>
-          <div>
-            <div className="text-2xl font-bold mb-5">Event Title</div>
-          </div>
-          <p className="text-sm font-medium mb-5">Category</p>
-          <p className="text-sm font-medium">
-            Description : Lorem ipsum dolor sit amet consectetur adipisicing
-            elit.
+          <p className="absolute bottom-2 left-2 text-slate-900 text-sm font-semibold py-1 px-2 bg-white/90 rounded-md">
+            {event.category}
           </p>
+        </CardHeader>
+        <CardContent className="px-2 py-2">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-bold leading-6">{event.title}</h2>
+            <p className="text-sm font-medium text-slate-700 leading-4 text-ellipsis h-[60px]">
+              {event.description}
+            </p>
+          </div>
         </CardContent>
-        <CardContent className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Date</CardTitle>
-          <CardTitle className="text-sm font-medium">Location</CardTitle>
+        <Separator />
+        <CardContent className="flex justify-between px-2 py-2 ">
+          <p className="text-sm font-medium">{event.location}</p>
+          <p className="text-sm font-medium">{eventDate}</p>
         </CardContent>
-        <CardContent className="flex flex-row items-center justify-between space-y-0 pb-5">
-          <CardTitle className="text-sm font-medium">Time</CardTitle>
-          <CardTitle className="text-sm font-bold">Price</CardTitle>
-        </CardContent>
+        <p className="text-sm p-2 font-bold text-slate-900">
+          {event.price > 0 ? formatPrice(event.price) : 'Free'}
+        </p>
       </Card>
     </div>
   );

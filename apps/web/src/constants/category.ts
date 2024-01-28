@@ -10,6 +10,8 @@ export const eventCategories = [
   'Lifestyle',
   'Music',
   'Science and Technology',
+  'Seminars',
   'Sports',
   'Travel',
+  'Webinars',
 ];
