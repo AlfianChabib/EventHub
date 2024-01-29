@@ -31,18 +31,18 @@ export default function Hero() {
             Explore the Journey with Us!
           </h1>
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {/* <EventCard />
             <EventCard />
             <EventCard />
             <EventCard />
             <EventCard />
             <EventCard />
             <EventCard />
-            <EventCard />
-            <EventCard />
+            <EventCard /> */}
           </div>
           <div className="flex items-center justify-center my-10">
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link href="/events">Explore Now</Link>
+              <Link href="/events?page=1&limit=10">Explore Now</Link>
             </Button>
           </div>
         </div>

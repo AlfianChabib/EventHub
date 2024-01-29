@@ -17,6 +17,21 @@ export interface EventData {
   TicketTier: TicketTier[];
 }
 
+export interface PaginationDataResult {
+  events: EventData[];
+  count: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
+  nextPage: number | null;
+  offset: number;
+  pages: number;
+  prevPage: number | null;
+  totalEvents: number;
+  totalPages: number;
+}
+
 export interface TicketTier {
   id: number;
   nameTier: string;
