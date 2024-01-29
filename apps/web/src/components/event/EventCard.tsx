@@ -4,6 +4,7 @@ import Image from 'next/image';
 import HeroImage from '/public/assets/concert1.jpg';
 import { Separator } from '../ui/separator';
 import { EventData } from '@/@types/event';
+import Link from 'next/link';
 
 interface EventCardProps {
   event: EventData;
@@ -26,7 +27,7 @@ export default function EventCard(props: EventCardProps) {
   };
 
   return (
-    <div>
+    <Link href={`/event/${event.id}`}>
       <Card className="flex flex-col rounded-lg overflow-hidden">
         <CardHeader className="flex relative p-0">
           <Image
@@ -58,6 +59,6 @@ export default function EventCard(props: EventCardProps) {
           {event.price > 0 ? formatPrice(event.price) : 'Free'}
         </p>
       </Card>
-    </div>
+    </Link>
   );
 }

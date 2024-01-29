@@ -35,13 +35,13 @@ export default function Header(props: HeaderProps) {
   const { sessionCookie } = props;
   const router = useRouter();
   const pathname = usePathname();
-  const authPathname = ['/auth/signin', '/auth/signup'];
-  const hideSearchBar = [
-    '/create-event',
-    '/event/[id]',
-    '/myprofile',
-    '/event/[id]/edit',
-  ];
+  const hiddenHeader = ['/auth/signin', '/auth/signup'];
+  // const hideSearchBar = [
+  //   '/create-event',
+  //   '/event/[id]',
+  //   '/myprofile',
+  //   '/event/[id]/edit',
+  // ];
   const hideCreateButton = ['/create-event', '/event/[id]', '/event/[id]/edit'];
 
   const [sessionData, setSessionData] = useState<any>({});
@@ -59,7 +59,7 @@ export default function Header(props: HeaderProps) {
     router.refresh();
   };
 
-  if (authPathname.includes(pathname)) return null;
+  if (hiddenHeader.includes(pathname)) return null;
   return (
     <header className="flex sticky top-2 left-0 z-50 bg-slate-900 items-center justify-between w-full p-2 rounded-lg my-2 gap-2">
       <NavigationMenu>
@@ -80,13 +80,15 @@ export default function Header(props: HeaderProps) {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      {hideSearchBar.includes(pathname) ? null : (
+
+      {/* {hideSearchBar.includes(pathname) ? null : (
         <Input
           placeholder="Search events..."
           type="search"
           className="rounded-full bg-slate-100 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-slate-400"
         />
-      )}
+      )}as */}
+
       {!sessionCookie ? (
         <NavigationMenu className="flex justify-between">
           <NavigationMenuList>

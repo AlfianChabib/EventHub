@@ -652,6 +652,8 @@ export const getAllEvent = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+    const category = req.query.category as string | undefined;
     const offset = (page - 1) * limit;
 
     if (page < 1 || isNaN(page)) {
@@ -659,6 +661,37 @@ export const getAllEvent = async (req: Request, res: Response) => {
         code: 400,
         success: false,
         message: 'Invalid page number',
+      });
+    }
+
+    const events = await prisma.event.findMany({
+      skip: offset,
+      take: limit,
+      where: {
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        category: {
+          contains: category,
+        },
+      },
+    });
+
+    let totalEvents = await prisma.event.count();
+
+    if (search !== undefined) {
+      totalEvents = await prisma.event.count({
+        where: {
+          title: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
       });
     }
 
@@ -670,17 +703,15 @@ export const getAllEvent = async (req: Request, res: Response) => {
       });
     }
 
-    const count = await prisma.event.count();
-
-    if (count === 0) {
+    if (search !== undefined && events.length === 0) {
       return res.status(404).json({
         code: 404,
         success: false,
-        message: 'No event found',
+        message: `Event ${search} not found, please try again with different search`,
       });
     }
 
-    const totalPages = Math.ceil(count / limit);
+    const totalPages = Math.ceil(totalEvents / limit);
 
     if (page > totalPages) {
       return res.status(404).json({
@@ -690,9 +721,11 @@ export const getAllEvent = async (req: Request, res: Response) => {
       });
     }
 
-    const events = await prisma.event.findMany({
-      skip: offset,
-      take: limit,
+    const allCategorys = await prisma.event.groupBy({
+      by: ['category'],
+      _count: {
+        category: true,
+      },
     });
 
     return res.status(200).json({
@@ -704,13 +737,12 @@ export const getAllEvent = async (req: Request, res: Response) => {
         currentPage: page,
         nextPage: page < totalPages ? page + 1 : null,
         prevPage: page > 1 ? page - 1 : null,
-        totalEvents: count,
+        totalEvents: totalEvents,
         limit: limit,
         offset: offset,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,
-        count: events.length,
-        pages: Math.ceil(count / limit),
+        categorys: allCategorys,
       },
     });
   } catch (error) {

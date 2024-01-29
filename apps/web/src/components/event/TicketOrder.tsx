@@ -70,7 +70,7 @@ export default function TicketOrder(props: Props) {
   };
 
   const checkDiscount = (price: number) => {
-    if (eventData.discount.discount > 0) {
+    if (eventData.discount) {
       let result = price - eventData.discount.discount;
       return formatPrice(result);
     }
@@ -118,7 +118,7 @@ export default function TicketOrder(props: Props) {
   return (
     <div className="flex md:relative absolute bottom-0 bg-background flex-col md:max-w-96 w-full border rounded-xl p-2 gap-2">
       <div className="flex text-lg font-bold">
-        {eventData.discount.discount > 0 ? (
+        {eventData.discount ? (
           <div className="flex w-full gap-2 items-center justify-center">
             <p className="text-emerald-800">{checkDiscount(eventData.price)}</p>
             <span className="text-xs text-foreground/60 line-through">
@@ -126,7 +126,7 @@ export default function TicketOrder(props: Props) {
             </span>
           </div>
         ) : (
-          <p>{formatPrice(eventData.price)}</p>
+          <p className="w-full text-center">{formatPrice(eventData.price)}</p>
         )}
       </div>
       {!sessionCookie ? (
@@ -143,7 +143,7 @@ export default function TicketOrder(props: Props) {
           {openOrder ? 'Close order' : 'Order now'}
         </Button>
       )}
-      {openOrder ? (
+      {openOrder && sessionCookie ? (
         <div className="flex flex-col w-full border p-2 gap-2 rounded-md">
           <h2 className="font-semibold">Select a ticket</h2>
           <RadioGroup defaultValue="normal-price">
@@ -168,36 +168,40 @@ export default function TicketOrder(props: Props) {
                 <p className="text-end">{checkDiscount(eventData.price)}</p>
               </Label>
             </div>
-            {eventData.TicketTier.map((tier, index) => (
-              <div className="flex items-center space-x-2" key={index}>
-                <RadioGroupItem
-                  value={tier.id.toString()}
-                  id={tier.id.toString()}
-                  onClick={() =>
-                    setOrderData({
-                      ...orderData,
-                      ticketTierId: tier.id,
-                    })
-                  }
-                />
-                <Label
-                  htmlFor={tier.id.toString()}
-                  className="flex w-full justify-between"
-                >
-                  <p>{tier.nameTier} ticket</p>
-                  <p>{checkDiscount(tier.price)}</p>
-                </Label>
-              </div>
-            ))}
+
+            {eventData.TicketTier &&
+              eventData.TicketTier.map((tier, index) => (
+                <div className="flex items-center space-x-2" key={index}>
+                  <RadioGroupItem
+                    value={tier.id.toString()}
+                    id={tier.id.toString()}
+                    onClick={() =>
+                      setOrderData({
+                        ...orderData,
+                        ticketTierId: tier.id,
+                      })
+                    }
+                  />
+                  <Label
+                    htmlFor={tier.id.toString()}
+                    className="flex w-full justify-between"
+                  >
+                    <p>{tier.nameTier} ticket</p>
+                    <p>{checkDiscount(tier.price)}</p>
+                  </Label>
+                </div>
+              ))}
           </RadioGroup>
           {!openPoint ? (
             <div className="flex w-full justify-between items-center py-2">
-              <p className="font-semibold">
-                You have {profileUser?.point.length} point(s)
+              <p className="font-semibold text-slate-700">
+                You have {profileUser?.point.length} point
               </p>
-              <Button onClick={() => setOpenPoint(!openPoint)}>
-                Use point
-              </Button>
+              {profileUser?.point ? (
+                <Button onClick={() => setOpenPoint(!openPoint)}>
+                  Use point
+                </Button>
+              ) : null}
             </div>
           ) : (
             <div className="flex flex-col w-full justify-between gap-2 py-2">
@@ -216,27 +220,32 @@ export default function TicketOrder(props: Props) {
             </div>
           )}
 
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a Voucher" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {profileUser?.voucher.map((voucher, index) => (
-                  <SelectItem
-                    value={voucher.id.toString()}
-                    key={index}
-                    onClick={() =>
-                      setOrderData({ ...orderData, voucherId: voucher.id })
-                    }
-                  >
-                    Voucher {voucher.id}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
+          {!profileUser?.voucher ? (
+            <Select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a Voucher" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {profileUser?.voucher.map((voucher, index) => (
+                    <SelectItem
+                      value={voucher.id.toString()}
+                      key={index}
+                      onClick={() =>
+                        setOrderData({ ...orderData, voucherId: voucher.id })
+                      }
+                    >
+                      Voucher {voucher.id}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          ) : (
+            <p className="font-semibold text-slate-700">
+              You have {profileUser?.voucher.length} voucher
+            </p>
+          )}
           <form onSubmit={handlePromotion}>
             <Label className="font-semibold">Promotion code (optional)</Label>
             <div className="flex items-center space-x-2">

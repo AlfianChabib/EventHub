@@ -1,5 +1,5 @@
 import { PaginationDataResult } from '@/@types/event';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 axios.defaults.withCredentials = true;
 
@@ -23,10 +23,12 @@ export const getEventById = async (id: string) => {
 export const getAllEvents = async (
   page: number,
   limit: number,
+  search: string,
+  category: string,
 ): Promise<PaginationDataResult | undefined> => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/event/all-event?page=${page}&limit=${limit}`,
+      `http://localhost:8000/api/event/all-event?page=${page}&limit=${limit}&search=${search}&category=${category}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +37,13 @@ export const getAllEvents = async (
     );
 
     return response.data.data;
-  } catch (error) {
-    console.log(error);
+  } catch (error: AxiosError | any) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.status);
+      console.error(error.response);
+      return error.response?.data;
+    } else {
+      console.error(error);
+    }
   }
 };

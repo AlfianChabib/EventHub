@@ -30,7 +30,15 @@ export interface PaginationDataResult {
   prevPage: number | null;
   totalEvents: number;
   totalPages: number;
+  categorys: Category[];
 }
+
+export type Category = {
+  category: string;
+  _count: {
+    category: number;
+  };
+};
 
 export interface TicketTier {
   id: number;

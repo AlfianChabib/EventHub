@@ -78,3 +78,24 @@
 .with-navbar {
   min-height: calc(100vh - 8rem);
 }
+
+.scroll-category::-webkit-scrollbar {
+  height: 6px;
+}
+
+/* Track */
+.scroll-category::-webkit-scrollbar-track {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle */
+.scroll-category::-webkit-scrollbar-thumb {
+  background: #003;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+.scroll-category::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
