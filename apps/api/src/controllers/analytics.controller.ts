@@ -9,7 +9,6 @@ export const getOrderAnalyticsYear = async (req: Request, res: Response) => {
       success: true,
       order,
     });
-    console.log(generateLast12MonthsData())
   } catch (error) {
     return res.status(500).json({
       code: 500,

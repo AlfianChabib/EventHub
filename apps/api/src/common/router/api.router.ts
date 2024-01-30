@@ -11,6 +11,6 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/event', eventRouter);
 apiRouter.use('/transaction', transactionRouter);
-apiRouter.use('/analytics', analyticsRouter);
+// apiRouter.use('/analytics', analyticsRouter);
 
 export default apiRouter;

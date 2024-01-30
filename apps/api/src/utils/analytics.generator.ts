@@ -37,6 +37,7 @@ export async function generateLast12MonthsData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
+        // userId: userId,
         transactionDate: {
           gte: startDate,
           lte: endDate,
@@ -72,6 +73,7 @@ export async function generateCurrentMonthData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
+        // userId: userId,
         transactionDate: {
           gte: startDate,
           lte: endDate,
@@ -105,6 +107,7 @@ export async function generateCurrentDayData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
+        // userId: userId,
         transactionDate: {
           gte: startDate,
           lte: endDate,
@@ -117,5 +120,3 @@ export async function generateCurrentDayData(): Promise<{
 
   return { currentDayData };
 }
-
-// prisma.$disconnect();

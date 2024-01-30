@@ -74,7 +74,11 @@ export default async function page(props: PageProps) {
       </div>
       <div className="flex relative w-full gap-4 py-8 px-4">
         <div className="flex flex-col w-full">
+          <p className="text-muted-foreground">{data.startDate}</p>
+          <br />
           <h1 className="text-5xl font-bold">{data.title}</h1>
+          <br />
+          <p className="text-muted-foreground">{data.location}</p>
           <p className="text-muted-foreground">{data.description}</p>
         </div>
         <TicketOrder eventData={data} sessionCookie={sessionCookie} />

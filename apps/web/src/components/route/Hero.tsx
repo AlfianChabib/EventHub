@@ -8,7 +8,7 @@ export default function Hero() {
   return (
     <>
       <section className="">
-        <div className="w-full h-[500px]">
+        <div className="w-full h-[500px] flex relative">
           <Image
             src={HeroImage}
             alt="hero-image"
@@ -18,11 +18,11 @@ export default function Hero() {
             objectFit="cover"
             className="w-full h-full rounded-md object-cover object-center"
           />
-        </div>
-        <div className="flex items-center justify-center my-4">
-          <h1 className="text-xl font-semibold text-center">
+          <h1 className="absolute text-xl font-semibold text-center bottom-10 left-10 text-white">
             Host, Connect, Celebrate: Your Events, With Our Platform!
           </h1>
+        </div>
+        <div className="flex items-center justify-center my-4">
         </div>
       </section>
       <section className="flex flex-col">
