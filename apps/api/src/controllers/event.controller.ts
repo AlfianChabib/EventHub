@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
-import { create } from 'ts-node';
 
 export interface DiscountEventPayload {
   discount: number;
@@ -758,33 +757,9 @@ export const getAllEvent = async (req: Request, res: Response) => {
 export const postEventReview = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
-    const { eventId } = req.params;
+    const { rating, review, eventId, ticketId } = req.body;
     const parsedUserId = parseInt(id);
     const parsedEventId = parseInt(eventId);
-
-    const { review, rating } = req.body;
-
-    if (!parsedUserId || isNaN(parsedUserId)) {
-      return res.status(400).json({
-        code: 400,
-        success: false,
-        message: 'Invalid ID, please provide a valid ID',
-      });
-    }
-
-    const userWithId = await prisma.event.findUnique({
-      where: {
-        id: parsedUserId,
-      },
-    });
-
-    if (!userWithId) {
-      return res.status(404).json({
-        code: 404,
-        success: false,
-        message: 'User not found',
-      });
-    }
 
     const eventWithId = await prisma.event.findUnique({
       where: {
@@ -800,14 +775,29 @@ export const postEventReview = async (req: Request, res: Response) => {
       });
     }
 
-    const getTicketEvent = await prisma.ticket.findFirst({
+    if (!ticketId) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Ticket not found',
+      });
+    }
+
+    if (!eventWithId) {
+      return res.status(404).json({
+        code: 404,
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    const getTicketEvent = await prisma.ticket.findUnique({
       where: {
-        eventId: parsedEventId,
-        userId: parsedUserId,
+        id: parseInt(ticketId),
       },
     });
 
-    if (getTicketEvent) {
+    if (!getTicketEvent) {
       return res.status(400).json({
         code: 400,
         success: false,
@@ -817,11 +807,18 @@ export const postEventReview = async (req: Request, res: Response) => {
 
     const createReview = await prisma.eventReview.create({
       data: {
-        rating,
+        rating: parseInt(rating),
         reveiw: review,
         eventId: parsedEventId,
         userId: parsedUserId,
       },
+    });
+
+    return res.status(201).json({
+      code: 201,
+      success: true,
+      message: 'Review created successfully',
+      data: createReview,
     });
   } catch (error) {
     console.log(error);

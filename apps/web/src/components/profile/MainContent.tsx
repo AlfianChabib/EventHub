@@ -30,7 +30,7 @@ export default function MainContent(props: MainContentProps) {
   }
 
   return (
-    <div className="flex w-full p-4 border rounded-md">
+    <div className="flex w-full md:p-4 p-2 border rounded-md">
       <TabsContent value="profile" className="w-full with-navbar">
         <ProfileInfo sessionCookie={sessionCookie} />
       </TabsContent>
@@ -40,15 +40,19 @@ export default function MainContent(props: MainContentProps) {
       <TabsContent value="points" className="w-full with-navbar">
         <MyPoints sessionCookie={sessionCookie} />
       </TabsContent>
-      <TabsContent value="dashboard" className="w-full with-navbar">
-        <Dashboard sessionCookie={sessionCookie} />
-      </TabsContent>
-      <TabsContent value="events" className="w-full with-navbar">
-        <MyEvents sessionCookie={sessionCookie} />
-      </TabsContent>
-      <TabsContent value="orders" className="w-full with-navbar">
-        <Orders sessionCookie={sessionCookie} />
-      </TabsContent>
+      {profileUser?.role === 'event-organizer' && (
+        <>
+          <TabsContent value="dashboard" className="w-full with-navbar">
+            <Dashboard sessionCookie={sessionCookie} />
+          </TabsContent>
+          <TabsContent value="events" className="w-full with-navbar">
+            <MyEvents sessionCookie={sessionCookie} />
+          </TabsContent>
+          <TabsContent value="orders" className="w-full with-navbar">
+            <Orders sessionCookie={sessionCookie} />
+          </TabsContent>
+        </>
+      )}
     </div>
   );
 }

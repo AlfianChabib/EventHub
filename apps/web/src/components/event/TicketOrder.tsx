@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { orderTransaction } from '@/services/transaction';
+import { Voucher } from './Voucher';
 
 interface Props {
   eventData: EventData;
@@ -113,6 +114,8 @@ export default function TicketOrder(props: Props) {
     }
   };
 
+  console.log(orderData);
+
   if (!profileUser && !sessionCookie) return null;
 
   return (
@@ -197,7 +200,7 @@ export default function TicketOrder(props: Props) {
               <p className="font-semibold text-slate-700">
                 You have {profileUser?.point.length} point
               </p>
-              {profileUser?.point ? (
+              {!profileUser?.point ? (
                 <Button onClick={() => setOpenPoint(!openPoint)}>
                   Use point
                 </Button>
@@ -220,27 +223,28 @@ export default function TicketOrder(props: Props) {
             </div>
           )}
 
-          {!profileUser?.voucher ? (
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a Voucher" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {profileUser?.voucher.map((voucher, index) => (
-                    <SelectItem
-                      value={voucher.id.toString()}
-                      key={index}
-                      onClick={() =>
-                        setOrderData({ ...orderData, voucherId: voucher.id })
-                      }
-                    >
-                      Voucher {voucher.id}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          {profileUser?.voucher ? (
+            // <Select>
+            //   <SelectTrigger className="w-full">
+            //     <SelectValue placeholder="Select a Voucher" />
+            //   </SelectTrigger>
+            //   <SelectContent>
+            //     <SelectGroup>
+            //       {profileUser?.voucher.map((voucher, index) => (
+            //         <SelectItem
+            //           value={voucher.id.toString()}
+            //           key={index}
+            //           onClick={() =>
+            //             setOrderData({ ...orderData, voucherId: voucher.id })
+            //           }
+            //         >
+            //           Voucher {voucher.id}
+            //         </SelectItem>
+            //       ))}
+            //     </SelectGroup>
+            //   </SelectContent>
+            // </Select>
+            <Voucher setOrderData={setOrderData} profileUser={profileUser} />
           ) : (
             <p className="font-semibold text-slate-700">
               You have {profileUser?.voucher.length} voucher
