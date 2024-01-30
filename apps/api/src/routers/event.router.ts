@@ -14,6 +14,7 @@ import {
   getEventId,
   getEventSession,
   updateEvent,
+  postEventReview,
 } from '@/controllers/event.controller';
 
 const eventRouter: Router = Router();
@@ -36,6 +37,8 @@ eventRouter.delete(
   authenticationMiddleware,
   deleteEvent,
 );
+
+eventRouter.post('/review', authenticationMiddleware, postEventReview);
 
 eventRouter.get('/management/:eventId', authenticationMiddleware, getEventById);
 

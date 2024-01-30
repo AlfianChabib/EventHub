@@ -172,7 +172,7 @@ export const orderEvent = async (req: Request, res: Response) => {
         });
       }
 
-      const updateEvent = await prisma.event.update({
+      await prisma.event.update({
         where: {
           id: eventWithId.id,
         },
@@ -202,7 +202,7 @@ export const orderEvent = async (req: Request, res: Response) => {
       }
 
       if (points) {
-        const deletePoint = await prisma.point.deleteMany({
+        await prisma.point.deleteMany({
           where: {
             userId: userWithId.id,
             id: {
@@ -212,10 +212,10 @@ export const orderEvent = async (req: Request, res: Response) => {
         });
       }
 
-      if (voucherId) {
-        const deleteVoucher = await prisma.voucher.delete({
+      if (userWithId.voucher.find((v) => v.id === voucherId)) {
+        await prisma.voucher.delete({
           where: {
-            userId: userWithId.id,
+            userId: parsedId,
             id: voucherId,
           },
         });

@@ -120,42 +120,46 @@ export default function Sidebar(props: SidebarProps) {
               </TabsList>
             </div>
           </div>
-          <h1 className="flex items-center justify-center font-semibold">
-            Event Organizer
-          </h1>
-          <div className="flex items-center justify-center border rounded-md">
-            <div defaultValue="profile" className="w-full p-1">
-              <TabsList className="flex-col w-full h-full gap-2">
-                <TabsTrigger
-                  className="w-full justify-between"
-                  value="dashboard"
-                  onClick={handleOpenSidebar}
-                >
-                  <p>Dashboard</p>
-                  <LayoutDashboard size={18} />
-                </TabsTrigger>
-                <Separator />
-                <TabsTrigger
-                  className="w-full justify-between"
-                  value="events"
-                  onClick={handleOpenSidebar}
-                >
-                  <p>My Events</p>
-                  <CalendarRange size={18} />
-                </TabsTrigger>
-                <Separator />
-                <TabsTrigger
-                  className="w-full justify-between"
-                  value="orders"
-                  onClick={handleOpenSidebar}
-                >
-                  <p>Orders</p>
-                  <ShoppingCart size={18} />
-                </TabsTrigger>
-                <Separator />
-              </TabsList>
-            </div>
-          </div>
+          {sessionData?.role === 'event-organizer' && (
+            <>
+              <h1 className="flex items-center justify-center font-semibold">
+                Event Organizer
+              </h1>
+              <div className="flex items-center justify-center border rounded-md">
+                <div defaultValue="profile" className="w-full p-1">
+                  <TabsList className="flex-col w-full h-full gap-2">
+                    <TabsTrigger
+                      className="w-full justify-between"
+                      value="dashboard"
+                      onClick={handleOpenSidebar}
+                    >
+                      <p>Dashboard</p>
+                      <LayoutDashboard size={18} />
+                    </TabsTrigger>
+                    <Separator />
+                    <TabsTrigger
+                      className="w-full justify-between"
+                      value="events"
+                      onClick={handleOpenSidebar}
+                    >
+                      <p>My Events</p>
+                      <CalendarRange size={18} />
+                    </TabsTrigger>
+                    <Separator />
+                    <TabsTrigger
+                      className="w-full justify-between"
+                      value="orders"
+                      onClick={handleOpenSidebar}
+                    >
+                      <p>Orders</p>
+                      <ShoppingCart size={18} />
+                    </TabsTrigger>
+                    <Separator />
+                  </TabsList>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <TabsList className="flex w-full h-20 border bg-background mt-2">
