@@ -1,6 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/prisma';
 
 export interface MonthData {
   month: string;
@@ -17,7 +15,10 @@ export interface HourData {
   count: number;
 }
 
-export async function generateLast12MonthsData(): Promise<{
+export async function generateLast12MonthsData(
+  userId: number,
+  eventId: number,
+): Promise<{
   last12Months: MonthData[];
 }> {
   const last12Months: MonthData[] = [];
@@ -37,7 +38,7 @@ export async function generateLast12MonthsData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
-        // userId: userId,
+        eventId: eventId,
         transactionDate: {
           gte: startDate,
           lte: endDate,
@@ -54,7 +55,10 @@ export async function generateLast12MonthsData(): Promise<{
   return { last12Months };
 }
 
-export async function generateCurrentMonthData(): Promise<{
+export async function generateCurrentMonthData(
+  userId: number,
+  eventId: number,
+): Promise<{
   currentMonthData: DayData[];
 }> {
   const currentMonthData: DayData[] = [];
@@ -73,7 +77,7 @@ export async function generateCurrentMonthData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
-        // userId: userId,
+        eventId: eventId,
         transactionDate: {
           gte: startDate,
           lte: endDate,
@@ -87,7 +91,10 @@ export async function generateCurrentMonthData(): Promise<{
   return { currentMonthData };
 }
 
-export async function generateCurrentDayData(): Promise<{
+export async function generateCurrentDayData(
+  userId: number,
+  eventId: number,
+): Promise<{
   currentDayData: HourData[];
 }> {
   const currentDayData: HourData[] = [];
@@ -107,7 +114,7 @@ export async function generateCurrentDayData(): Promise<{
 
     const count = await prisma.transaction.count({
       where: {
-        // userId: userId,
+        eventId: eventId,
         transactionDate: {
           gte: startDate,
           lte: endDate,

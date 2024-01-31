@@ -28,9 +28,7 @@ export default function MyTickets(props: Props) {
       </h1>
       <div className="flex flex-col items-center justify-center w-full px-4 border rounded-md min-h-[200px]">
         {profileUser?.tickets.length === 0 && (
-          <p className="text-center">
-            You don&apos;t have any tickets
-          </p>
+          <p className="text-center">You don&apos;t have any tickets</p>
         )}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {upcomingTickets?.map((ticket, index) => {
@@ -42,9 +40,9 @@ export default function MyTickets(props: Props) {
         Previous Events
       </h1>
       <div className="flex flex-col items-center justify-center w-full px-4 border rounded-md min-h-[200px]">
-          {profileUser?.tickets.length === 0 && (
-            <p className="text-center">You don&apos;t have any tickets</p>
-          )}
+        {profileUser?.tickets.length === 0 && (
+          <p className="text-center">You don&apos;t have any tickets</p>
+        )}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {endedTickets?.map((ticket, index) => {
             return (

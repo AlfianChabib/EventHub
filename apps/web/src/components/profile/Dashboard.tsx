@@ -1,66 +1,58 @@
 'use client';
-import { getSessionClient } from '@/services/client';
-import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '../ui/card';
+import { ProfileUser, getSessionClient } from '@/services/client';
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Overview } from '../Overview';
-import { RecentSales } from '../RecentSales';
-// import { CalendarDateRangePicker } from "@/components/date-range-picker";
+import OverviewEvent from './OverviewEvent';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface MainContentProps {
+  profileUser: ProfileUser;
   sessionCookie: string | undefined;
 }
 
 export default function Dashboard(props: MainContentProps) {
-  const { sessionCookie } = props;
-  const [sessionData, setSessionData] = useState<any>({});
+  const { profileUser, sessionCookie } = props;
+  const { event } = profileUser;
+  const firstEventId = event[0].id;
+  const [overviewEventId, setOverviewEventId] = useState<number>(firstEventId);
 
-  useEffect(() => {
-    getSessionClient(sessionCookie).then((data) => {
-      if (data) setSessionData(data);
-    });
-  }, [sessionCookie]);
+  if (!profileUser) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-center flex items-center justify-center mb-5">
+      <h1 className="text-3xl font-semibold text-center flex items-center justify-center">
         Dashboard
       </h1>
       <ScrollArea className="h-full">
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2"></div>
+        <div className="flex-1 space-y-4 pt-2">
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              {/* <TabsTrigger value="analytics">Analytics</TabsTrigger> */}
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
@@ -84,9 +76,6 @@ export default function Dashboard(props: MainContentProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">$45,231.89</div>
-                    {/* <p className="text-xs text-muted-foreground">
-                      +20.1% from last month
-                    </p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -111,9 +100,7 @@ export default function Dashboard(props: MainContentProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+2350</div>
-                    <p className="text-xs text-muted-foreground">
-                      {/* +180.1% from last month */}
-                    </p>
+                    <p className="text-xs text-muted-foreground"></p>
                   </CardContent>
                 </Card>
                 <Card>
@@ -136,63 +123,53 @@ export default function Dashboard(props: MainContentProps) {
                     </svg>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+12,234</div>
-                    {/* <p className="text-xs text-muted-foreground">
-                      +19% from last month
-                    </p> */}
+                    <div className="text-2xl font-bold">
+                      +{profileUser?.event.length}
+                    </div>
                   </CardContent>
                 </Card>
-                {/* <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Active Now
-                    </CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+573</div>
-                    <p className="text-xs text-muted-foreground">
-                      +201 since last hour
-                    </p>
-                  </CardContent>
-                </Card> */}
               </div>
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                {/* Card Analytics Overview */}
-                <Card className="col-span-4">
-                  <CardHeader>
-                    <CardTitle>Overview</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pl-2">
-                    <Overview />
-                  </CardContent>
-                </Card>
-                {/* Card Recent Sales */}
-                <Card className="col-span-4 md:col-span-3">
-                  <CardHeader>
-                    <CardTitle>Recent Sales</CardTitle>
-                    <CardDescription>
-                      You made 265 sales this month.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <RecentSales />
-                  </CardContent>
-                </Card>
+              <div className="flex w-full">
+                <Table>
+                  <TableCaption>A list of your events.</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Id</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Analytics</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {event?.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell>{event.id}</TableCell>
+                        <TableCell className="font-medium">
+                          {event.title}
+                        </TableCell>
+                        <TableCell>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button>View Analytics</Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  {event.title} Analytics
+                                </DialogTitle>
+                              </DialogHeader>
+                              <OverviewEvent
+                                overviewEventId={event.id}
+                                sessionCookie={sessionCookie}
+                              />
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </TabsContent>
-            <TabsContent value="analytics" className="space-y-4"></TabsContent>
           </Tabs>
         </div>
       </ScrollArea>

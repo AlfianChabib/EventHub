@@ -38,21 +38,25 @@ export default function MainContent(props: MainContentProps) {
         <MyTickets sessionCookie={sessionCookie} profileUser={profileUser} />
       </TabsContent>
       <TabsContent value="points" className="w-full with-navbar">
-        <MyPoints sessionCookie={sessionCookie} />
+        <MyPoints sessionCookie={sessionCookie} profileUser={profileUser} />
       </TabsContent>
-      {profileUser?.role === 'event-organizer' && (
+      {profileUser?.role === 'event-organizer' &&
+      profileUser?.event.length > 0 ? (
         <>
           <TabsContent value="dashboard" className="w-full with-navbar">
-            <Dashboard sessionCookie={sessionCookie} />
+            <Dashboard
+              profileUser={profileUser}
+              sessionCookie={sessionCookie}
+            />
           </TabsContent>
           <TabsContent value="events" className="w-full with-navbar">
-            <MyEvents sessionCookie={sessionCookie} />
+            <MyEvents sessionCookie={sessionCookie} profileUser={profileUser} />
           </TabsContent>
-          <TabsContent value="orders" className="w-full with-navbar">
+          {/* <TabsContent value="orders" className="w-full with-navbar">
             <Orders sessionCookie={sessionCookie} />
-          </TabsContent>
+          </TabsContent> */}
         </>
-      )}
+      ) : null}
     </div>
   );
 }

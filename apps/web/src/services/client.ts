@@ -18,6 +18,7 @@ export interface SessionData {
 }
 
 interface EventData {
+  id: number;
   title: string;
   description: string;
   location: string;
@@ -61,10 +62,10 @@ export interface Ticket {
   ticketTier: TicketTier;
 }
 
-interface Point {
+export interface Point {
   id: number;
   userId: number;
-  expireDate: Date;
+  expireDate: string;
 }
 
 interface Voucher {

@@ -1,5 +1,10 @@
 'use client';
-import { EventDataResponse, getSessionClient } from '@/services/client';
+import {
+  EventDataResponse,
+  Point,
+  ProfileUser,
+  getSessionClient,
+} from '@/services/client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import {
@@ -15,23 +20,21 @@ import {
 
 interface MainContentProps {
   sessionCookie: string | undefined;
+  profileUser: ProfileUser | null;
 }
 
 export default function MyPoints(props: MainContentProps) {
-  const { sessionCookie } = props;
-  const [sessionData, setSessionData] = useState<any>({});
-  const { event } = sessionData;
-
-  useEffect(() => {
-    getSessionClient(sessionCookie).then((data) => {
-      if (data) setSessionData(data);
-    });
-  }, [sessionCookie]);
+  const { sessionCookie, profileUser } = props;
 
   const formatDate = (date: string) => {
     const d = new Date(date);
     return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
   };
+
+  if (!profileUser) {
+    return <div>Loading...</div>;
+  }
+  const { point } = profileUser;
 
   return (
     <div>
@@ -40,33 +43,21 @@ export default function MyPoints(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
+          <TableCaption>A list of your points.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Id</TableHead>
+              <TableHead>Expire Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {event?.map((event: any) => (
-              <TableRow key={event.id}>
-                <TableCell className="font-medium">{event.title}</TableCell>
-                <TableCell>{event.category}</TableCell>
-                <TableCell>{formatDate(event.startDate)}</TableCell>
-                <TableCell>{formatDate(event.endDate)}</TableCell>
-                <TableCell>{event.status}</TableCell>
+            {point?.map((point: Point) => (
+              <TableRow key={point.id}>
+                <TableCell className="font-medium">{point.id}</TableCell>
+                <TableCell>{formatDate(point.expireDate)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter> */}
         </Table>
       </div>
     </div>

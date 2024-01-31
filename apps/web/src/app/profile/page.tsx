@@ -2,10 +2,12 @@ import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import Sidebar from '@/components/profile/Sidebar';
 import MainContent from '@/components/profile/MainContent';
-import { sessionCookie } from '@/lib/sessionCookie';
 import Heading from '@/utils/Heading';
+import { cookies } from 'next/headers';
 
 export default function page() {
+  const sessionCookie: string | undefined = cookies().get('user-token')?.value;
+
   return (
     <section className="flex flex-col w-full">
       {/* <Heading

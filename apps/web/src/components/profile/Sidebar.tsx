@@ -39,8 +39,6 @@ export default function Sidebar(props: SidebarProps) {
     return <div>Loading...</div>;
   }
 
-  console.log(sessionData);
-
   const displayName =
     sessionData.name.length > 15
       ? `${sessionData.name.slice(0, 15)}...`

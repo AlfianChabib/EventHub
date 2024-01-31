@@ -1,5 +1,9 @@
 'use client';
-import { EventDataResponse, getSessionClient } from '@/services/client';
+import {
+  EventDataResponse,
+  ProfileUser,
+  getSessionClient,
+} from '@/services/client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import {
@@ -15,10 +19,11 @@ import {
 
 interface MainContentProps {
   sessionCookie: string | undefined;
+  profileUser: ProfileUser | null;
 }
 
 export default function MyEvents(props: MainContentProps) {
-  const { sessionCookie } = props;
+  const { sessionCookie, profileUser } = props;
   const [sessionData, setSessionData] = useState<any>({});
   const { event } = sessionData;
 
@@ -40,7 +45,7 @@ export default function MyEvents(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
+          <TableCaption>A list of your events.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Title</TableHead>
@@ -61,12 +66,6 @@ export default function MyEvents(props: MainContentProps) {
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter> */}
         </Table>
       </div>
     </div>

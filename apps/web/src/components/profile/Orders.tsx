@@ -40,7 +40,7 @@ export default function Orders(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
+          <TableCaption>A list of your event ordered.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Title</TableHead>
@@ -61,12 +61,6 @@ export default function Orders(props: MainContentProps) {
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter> */}
         </Table>
       </div>
     </div>
