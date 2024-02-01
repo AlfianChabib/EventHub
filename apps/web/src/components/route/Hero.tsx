@@ -1,45 +1,62 @@
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import EventCard from '../event/EventCard';
+import HeroImage from '/public/assets/concert1.jpg';
+import { useEffect, useState } from 'react';
 
 export default function Hero() {
+  // const [allEventData, setAllEventData] =
+  // useState<any[]>([]);
+
+  // useEffect(() => {
+	// 	setCourses(data?.courses);
+	// }, [data]);
+
+
   return (
     <>
-      <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
-        <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">
-          <div className="flex flex-col justify-center gap-8">
-            <h1 className="h1-bold">
-              Host, Connect, Celebrate: Your Events, Our Platform!
-            </h1>
-            <p className="p-regular-20 md:p-regular-24">
-              Book and learn helpful tips from 3,168+ mentors in world-class
-              companies with our global community.
-            </p>
-            <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link href="#events">Explore Now</Link>
-            </Button>
-          </div>
-
+      <section className="">
+        <div className="w-full h-[500px] flex relative">
           <Image
-            src="/assets/images/hero.png"
-            alt="hero"
-            width={1000}
-            height={1000}
-            className="max-h-[70vh] object-contain object-center 2xl:max-h-[50vh]"
+            src={HeroImage}
+            alt="hero-image"
+            width={2000}
+            height={2000}
+            priority
+            objectFit="cover"
+            className="w-full h-full rounded-md object-cover object-center"
           />
+          <h1 className="absolute text-xl font-semibold text-center bottom-10 left-10 right-10 text-white">
+            Host, Connect, Celebrate: Your Events, With Our Platform!
+          </h1>
+        </div>
+        <div className="flex items-center justify-center my-4">
         </div>
       </section>
-
-      <section
-        id="events"
-        className="wrapper my-8 flex flex-col gap-8 md:gap-12"
-      >
-        <h2 className="h2-bold">
-          Trust by <br /> Thousands of Events
-        </h2>
-
-        <div className="flex w-full flex-col gap-5 md:flex-row">
-          Search CategoryFilter
+      <section className="flex flex-col">
+        <div className="w-full px-4 border rounded-md">
+          <h1 className="text-3xl font-semibold text-center flex items-center justify-center my-4">
+            Explore the Journey with Us!
+          </h1>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {/* {allEventData?.events.map((event, index) => {
+            return <EventCard key={index} event={event} />;
+          })} */}
+            {/* <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard /> */}
+          </div>
+          <div className="flex items-center justify-center my-10">
+            <Button size="lg" asChild className="button w-full sm:w-fit">
+              <Link href="/events?page=1&limit=10">Explore Now</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </>

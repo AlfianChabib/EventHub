@@ -31,6 +31,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   const { id, username, email, role } = verifyTokenResult.data;
 
   const isAdmin = role === 'admin';
+  // const isEventOrganizer = role === 'event-organizer';
 
   req.body = { id, username, email, isAdmin, authToken, ...req.body };
 

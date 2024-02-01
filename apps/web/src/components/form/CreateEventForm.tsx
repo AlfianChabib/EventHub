@@ -2,18 +2,19 @@
 
 import * as z from 'zod';
 import axios from 'axios';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { format, formatDistance, formatISO, formatISODuration } from 'date-fns';
+import { Button } from '../ui/button';
+import { useForm } from 'react-hook-form';
+import { Calendar } from '@/components/ui/calendar';
+import { Separator } from '../ui/separator';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
 import { eventCategories } from '@/constants/category';
-import { Separator } from '../ui/separator';
-import { cn } from '@/lib/utils';
 import { generateTimeArray } from '@/constants/time';
+import { format, formatDistance, formatISO } from 'date-fns';
 import {
   Form,
   FormControl,
@@ -29,12 +30,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { TicketTierForm, Tier } from './TicketTierForm';
+import { DiscountEventForm } from './DiscountEventForm';
 
 const formSchema = z.object({
   title: z
@@ -59,16 +72,50 @@ const formSchema = z.object({
   endDate: z.date({ required_error: 'A date of birth is required.' }),
   startDatetime: z.string(),
   endDatetime: z.string(),
+  ticketTiers: z
+    .array(
+      z.object({
+        nameTier: z.string(),
+        price: z.string().refine((val) => !Number.isNaN(parseInt(val, 10))),
+        description: z.string(),
+      }),
+    )
+    .optional(),
+  discountEvent: z
+    .object({
+      discount: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
+        message: 'Expected number, received a string',
+      }),
+      discountStartDate: z.date().optional(),
+      discountEndDate: z.date().optional(),
+    })
+    .optional(),
 });
 
 interface CreateEventFormProps {
   session?: string;
 }
 
+export interface TicketTier {
+  nameTier: string;
+  price: number;
+  description: string;
+}
+
+interface DiscountData {
+  discount: string;
+  discountEndDate: Date;
+}
+
 export default function CreateEventForm(props: CreateEventFormProps) {
   const router = useRouter();
   const { session } = props;
   const time = generateTimeArray();
+  const [ticketTierData, setTicketTierData] = useState<Tier[]>([]);
+  const [discountEventData, setDiscountEventData] = useState<DiscountData>({
+    discount: '0',
+    discountEndDate: new Date(),
+  });
 
   useEffect(() => {
     if (!session) {
@@ -89,6 +136,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       endDatetime: '',
       price: '0',
       seats: '0',
+      ticketTiers: [],
+      discountEvent: {
+        discount: '0',
+        discountStartDate: new Date(),
+        discountEndDate: new Date(),
+      },
     },
   });
 
@@ -96,6 +149,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
     try {
       const { price, seats, startDate, endDate, startDatetime, endDatetime } =
         values;
+
+      const { discount, discountEndDate } = discountEventData;
 
       const startDateISO = formatISO(startDate, { representation: 'date' });
       const endDateISO = formatISO(endDate, { representation: 'date' });
@@ -106,12 +161,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
         new Date(endDateISO + 'T' + endDatetime),
       );
 
+      const endDateDiscountISO = formatISO(discountEndDate);
+
+      const newDateIso = formatISO(new Date());
+
       const duration = formatDistance(
         new Date(startDatetimeISO),
         new Date(endDatetimeISO),
       );
-
-      console.log(duration);
 
       const response = await axios
         .post(
@@ -126,6 +183,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
             startDate: startDatetimeISO,
             endDate: endDatetimeISO,
             duration,
+            ticketTiers: [...ticketTierData],
+            discountEvent: {
+              discount: parseInt(discount),
+              discountEndDate: endDateDiscountISO,
+              discountStartDate: newDateIso,
+            },
           },
           {
             withCredentials: true,
@@ -141,7 +204,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       console.log(response);
 
       if (response.success === true) {
-        router.push('/myprofile');
+        router.push('/profile');
         router.refresh();
         form.reset();
       } else {
@@ -151,6 +214,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
       console.log(error);
     }
   };
+
   return (
     <div className="md:p-8 p-2">
       <Form {...form}>
@@ -193,19 +257,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
           />
           <FormField
             control={form.control}
-            name="price"
-            render={({ field }: any) => (
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <Input type={'number'} placeholder="Price" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="category"
             render={({ field }) => (
               <FormItem className="md:w-1/2 w-full">
@@ -231,6 +282,33 @@ export default function CreateEventForm(props: CreateEventFormProps) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }: any) => (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <Input type={'number'} placeholder="Price" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex justify-between items-end pt-2">
+            <div>
+              <h2 className="text-xl font-semibold">Discount Promo?</h2>
+              <p>Ticket tier is the price at which users get more facilities</p>
+            </div>
+            <DiscountEventForm setDiscountEventData={setDiscountEventData} />
+          </div>
+          <div className="flex justify-between items-end pt-2">
+            <div>
+              <h2 className="text-xl font-semibold">Ticket Tier?</h2>
+              <p>Ticket tier is the price at which users get more facilities</p>
+            </div>
+            <TicketTierForm setTicketTierData={setTicketTierData} />
+          </div>
           <Separator className="my-4" />
           <div>
             <h2 className="text-3xl font-semibold">Location</h2>
@@ -417,7 +495,28 @@ export default function CreateEventForm(props: CreateEventFormProps) {
             >
               Discard
             </Button>
-            <Button type="submit">Submit & Create</Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button>Submit & Create</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Make sure your input is correct and matches what you want.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    asChild
+                  >
+                    <Button type="submit">Continue</Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </Form>

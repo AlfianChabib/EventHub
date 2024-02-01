@@ -10,7 +10,7 @@ import { getSessionClient } from '@/services/client';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { PlusSquare, User } from 'lucide-react';
+import { Megaphone, PlusSquare, User } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -21,6 +21,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -35,16 +36,10 @@ export default function Header(props: HeaderProps) {
   const { sessionCookie } = props;
   const router = useRouter();
   const pathname = usePathname();
-  const authPathname = ['/auth/signin', '/auth/signup'];
-  const hideSearchBar = [
-    '/create-event',
-    '/event/[id]',
-    '/myprofile',
-    '/event/[id]/edit',
-  ];
+  const hiddenHeader = ['/auth/signin', '/auth/signup'];
   const hideCreateButton = ['/create-event', '/event/[id]', '/event/[id]/edit'];
 
-  const [sessionData, setSessionData] = useState<object>({});
+  const [sessionData, setSessionData] = useState<any>({});
 
   useEffect(() => {
     getSessionClient(sessionCookie).then((data) => {
@@ -52,16 +47,15 @@ export default function Header(props: HeaderProps) {
     });
   }, [sessionCookie]);
 
-  console.log(sessionData);
-
   const handleLogout = async () => {
     await axios.post('http://localhost:8000/api/auth/signout', {
       withCredentials: true,
     });
+    router.push('/');
     router.refresh();
   };
 
-  if (authPathname.includes(pathname)) return null;
+  if (hiddenHeader.includes(pathname)) return null;
   return (
     <header className="flex sticky top-2 left-0 z-50 bg-slate-900 items-center justify-between w-full p-2 rounded-lg my-2 gap-2">
       <NavigationMenu>
@@ -82,13 +76,6 @@ export default function Header(props: HeaderProps) {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      {hideSearchBar.includes(pathname) ? null : (
-        <Input
-          placeholder="Search events..."
-          type="search"
-          className="rounded-full bg-slate-100 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-slate-400"
-        />
-      )}
       {!sessionCookie ? (
         <NavigationMenu className="flex justify-between">
           <NavigationMenuList>
@@ -107,10 +94,21 @@ export default function Header(props: HeaderProps) {
       ) : (
         <NavigationMenu className="flex justify-between">
           <NavigationMenuList>
+            <NavigationMenuItem>
+              <Button asChild variant="secondary">
+                <Link href="/events" className="flex gap-1 items-center">
+                  <Megaphone />
+                  <p>Events</p>
+                </Link>
+              </Button>
+            </NavigationMenuItem>
             {hideCreateButton.includes(pathname) ? null : (
               <NavigationMenuItem>
                 <Button asChild variant="secondary" className="sm:flex hidden">
-                  <Link href="/create-event">
+                  <Link
+                    href="/create-event"
+                    className="flex gap-1 items-center"
+                  >
                     <PlusSquare />
                     <p>Create Event</p>
                   </Link>
@@ -127,6 +125,7 @@ export default function Header(props: HeaderProps) {
                 </Button>
               </NavigationMenuItem>
             )}
+
             <NavigationMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -138,18 +137,37 @@ export default function Header(props: HeaderProps) {
                   className="w-56 md:mr-0 mr-2"
                   sideOffset={6}
                 >
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <p>{sessionData?.username}</p>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link className="w-full" href="/profile">
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <Separator className="my-2" />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    Log Out
-                  </DropdownMenuItem>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <Link className="w-full" href="/profile">
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <Separator className="my-2" />
+                    <DropdownMenuItem>
+                      <Link className="w-full" href="/events">
+                        Events
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link className="w-full" href="/faq">
+                        FAQ
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link className="w-full" href="/about">
+                        About Us
+                      </Link>
+                    </DropdownMenuItem>
+                    <Separator className="my-2" />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      Log Out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </NavigationMenuItem>

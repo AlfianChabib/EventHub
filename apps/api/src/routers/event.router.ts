@@ -1,18 +1,49 @@
-import { createEvent, updateEvent } from '@/controllers/event.controller';
+import { Router } from 'express';
 import { imageUploader } from '@/controllers/upload.controller';
 import authenticationMiddleware from '@/middleware/authentication.middleware';
-import { eventValidator } from '@/middleware/eventValidator.middleware';
 import upload from '@/middleware/uploader.middleware';
-import { Router } from 'express';
+import {
+  eventValidator,
+  updateEventValidator,
+} from '@/middleware/eventValidator.middleware';
+import {
+  createEvent,
+  deleteEvent,
+  getAllEvent,
+  getEventById,
+  getEventId,
+  getEventSession,
+  updateEvent,
+  postEventReview,
+} from '@/controllers/event.controller';
 
 const eventRouter: Router = Router();
 
+eventRouter.get('/all-event', getAllEvent);
+
+eventRouter.get('/:eventId', getEventId);
+
 eventRouter.post('/', authenticationMiddleware, eventValidator, createEvent);
-eventRouter.post(
-  '/image-upload',
-  upload.single('image'),
-  imageUploader,
+
+eventRouter.patch(
+  '/management/update/:eventId',
+  authenticationMiddleware,
+  updateEventValidator,
+  updateEvent,
 );
-// eventRouter.patch('/:id', authenticationMiddleware, updateEvent);
+
+eventRouter.delete(
+  '/management/delete/:eventId',
+  authenticationMiddleware,
+  deleteEvent,
+);
+
+eventRouter.post('/review', authenticationMiddleware, postEventReview);
+
+eventRouter.get('/management/:eventId', authenticationMiddleware, getEventById);
+
+eventRouter.get('/management', authenticationMiddleware, getEventSession);
+
+eventRouter.post('/image-upload', upload.single('image'), imageUploader);
 
 export default eventRouter;

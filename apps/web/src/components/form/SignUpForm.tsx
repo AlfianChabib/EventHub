@@ -128,7 +128,7 @@ export default function SignUpForm() {
           name="referralCode"
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>Referral Code</FormLabel>
+              <FormLabel>Referral Code (optional)</FormLabel>
               <FormControl>
                 <Input type="text" placeholder="Referal Code" {...field} />
               </FormControl>
