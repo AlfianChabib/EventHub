@@ -35,6 +35,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { TicketTierForm, Tier } from './TicketTierForm';
 import { DiscountEventForm } from './DiscountEventForm';
 
@@ -484,23 +495,31 @@ export default function CreateEventForm(props: CreateEventFormProps) {
             >
               Discard
             </Button>
-            <Button type="submit">Submit & Create</Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button>Submit & Create</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Make sure your input is correct and matches what you want.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    asChild
+                  >
+                    <Button type="submit">Continue</Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </Form>
     </div>
   );
 }
-
-// ticketTiers: z.array(
-//   z.object({
-//     nameTier1: z.string(),
-//     priceTier1: z.string(),
-//     descriptionTier1: z.string(),
-//   }),
-//   z.object({
-//     nameTier2: z.string(),
-//     priceTier2: z.string(),
-//     descriptionTier2: z.string(),
-//   }),
-// ),
