@@ -40,7 +40,6 @@ export default function Orders(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          <TableCaption>A list of your event ordered.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Title</TableHead>

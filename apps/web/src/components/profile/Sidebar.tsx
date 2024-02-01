@@ -79,7 +79,7 @@ export default function Sidebar(props: SidebarProps) {
             <Separator />
             <div className="flex gap-4 p-2 items-center justify-center">
               <CardDescription className="font-semibold">
-                Point : <span>{sessionData?.point.length}</span>
+                Point : <span>{sessionData?.point.length * 10000}</span>
               </CardDescription>
             </div>
           </Card>
@@ -143,7 +143,7 @@ export default function Sidebar(props: SidebarProps) {
                       <p>My Events</p>
                       <CalendarRange size={18} />
                     </TabsTrigger>
-                    <Separator />
+                    {/* <Separator />
                     <TabsTrigger
                       className="w-full justify-between"
                       value="orders"
@@ -152,7 +152,7 @@ export default function Sidebar(props: SidebarProps) {
                       <p>Orders</p>
                       <ShoppingCart size={18} />
                     </TabsTrigger>
-                    <Separator />
+                    <Separator /> */}
                   </TabsList>
                 </div>
               </div>

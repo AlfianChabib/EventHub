@@ -45,7 +45,7 @@ export default function MyEvents(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          <TableCaption>A list of your events.</TableCaption>
+          {/* <TableCaption>A list of your events.</TableCaption> */}
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Title</TableHead>

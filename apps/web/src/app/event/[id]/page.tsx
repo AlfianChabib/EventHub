@@ -5,6 +5,7 @@ import { getEventById } from '@/services/event';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import HeroImage from '/public/assets/concert1.jpg';
+import Heading from '@/utils/Heading';
 
 interface PageProps {
   params: { id: string };
@@ -60,6 +61,11 @@ export default async function page(props: PageProps) {
 
   return (
     <section className="flex flex-col w-full min-h-screen">
+      <Heading
+        title={data.title}
+        description="EventHub is a platform to promote your events with ease"
+        keywords="Event, Music, Concert, Seminar"
+      />
       <div className="w-full rounded-lg overflow-hidden">
         <AspectRatio ratio={16 / 7}>
           <Image
@@ -82,6 +88,13 @@ export default async function page(props: PageProps) {
           <p className="text-muted-foreground">{data.description}</p>
         </div>
         <TicketOrder eventData={data} sessionCookie={sessionCookie} />
+      </div>
+      <div>
+        <h1 className="text-5xl font-bold">Ratings & Review</h1>
+        <p className="text-muted-foreground">
+          Total rating dari jumlah attendees
+        </p>
+        <p className="text-muted-foreground">List review</p>
       </div>
     </section>
   );

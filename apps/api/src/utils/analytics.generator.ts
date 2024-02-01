@@ -23,14 +23,13 @@ export async function generateLast12MonthsData(
 }> {
   const last12Months: MonthData[] = [];
   const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() + 1);
+  currentDate.setDate(1); // Set to the first day of the current month
 
   for (let i = 11; i >= 0; i--) {
     const endDate = new Date(currentDate);
-    endDate.setDate(0); // Set to the last day of the previous month
+    endDate.setMonth(endDate.getMonth() + 1, 0); // Set to the last day of the current month
 
-    const startDate = new Date(endDate);
-    startDate.setDate(1); // Set to the first day of the month
+    const startDate = new Date(currentDate);
 
     const monthYear = `${startDate.toLocaleString('default', {
       month: 'short',

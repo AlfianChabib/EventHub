@@ -3,8 +3,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import EventCard from '../event/EventCard';
 import HeroImage from '/public/assets/concert1.jpg';
+import { useEffect, useState } from 'react';
 
 export default function Hero() {
+  // const [allEventData, setAllEventData] =
+  // useState<any[]>([]);
+
+  // useEffect(() => {
+	// 	setCourses(data?.courses);
+	// }, [data]);
+
+
   return (
     <>
       <section className="">
@@ -18,7 +27,7 @@ export default function Hero() {
             objectFit="cover"
             className="w-full h-full rounded-md object-cover object-center"
           />
-          <h1 className="absolute text-xl font-semibold text-center bottom-10 left-10 text-white">
+          <h1 className="absolute text-xl font-semibold text-center bottom-10 left-10 right-10 text-white">
             Host, Connect, Celebrate: Your Events, With Our Platform!
           </h1>
         </div>
@@ -31,6 +40,9 @@ export default function Hero() {
             Explore the Journey with Us!
           </h1>
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {/* {allEventData?.events.map((event, index) => {
+            return <EventCard key={index} event={event} />;
+          })} */}
             {/* <EventCard />
             <EventCard />
             <EventCard />

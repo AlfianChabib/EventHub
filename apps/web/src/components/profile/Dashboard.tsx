@@ -42,6 +42,8 @@ export default function Dashboard(props: MainContentProps) {
     return <div>Loading...</div>;
   }
 
+  console.log(profileUser)
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center flex items-center justify-center">
@@ -50,13 +52,13 @@ export default function Dashboard(props: MainContentProps) {
       <ScrollArea className="h-full">
         <div className="flex-1 space-y-4 pt-2">
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
+            {/* <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              {/* <TabsTrigger value="analytics">Analytics</TabsTrigger> */}
-            </TabsList>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            </TabsList> */}
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                <Card>
+                {/* <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                       Total Revenue
@@ -77,8 +79,8 @@ export default function Dashboard(props: MainContentProps) {
                   <CardContent>
                     <div className="text-2xl font-bold">$45,231.89</div>
                   </CardContent>
-                </Card>
-                <Card>
+                </Card> */}
+                {/* <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                       Total Attendees
@@ -102,7 +104,7 @@ export default function Dashboard(props: MainContentProps) {
                     <div className="text-2xl font-bold">+2350</div>
                     <p className="text-xs text-muted-foreground"></p>
                   </CardContent>
-                </Card>
+                </Card> */}
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">

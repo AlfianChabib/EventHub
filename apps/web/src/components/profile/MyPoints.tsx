@@ -43,17 +43,17 @@ export default function MyPoints(props: MainContentProps) {
       </h1>
       <div className="flex w-full">
         <Table>
-          <TableCaption>A list of your points.</TableCaption>
+          {/* <TableCaption>A list of your points.</TableCaption> */}
           <TableHeader>
             <TableRow>
-              <TableHead>Id</TableHead>
+              <TableHead>Point</TableHead>
               <TableHead>Expire Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {point?.map((point: Point) => (
               <TableRow key={point.id}>
-                <TableCell className="font-medium">{point.id}</TableCell>
+                <TableCell className="font-medium">10000</TableCell>
                 <TableCell>{formatDate(point.expireDate)}</TableCell>
               </TableRow>
             ))}

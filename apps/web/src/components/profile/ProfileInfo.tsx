@@ -33,15 +33,15 @@ export default function ProfileInfo(props: MainContentProps) {
         Profile Information
       </h1>
       <Card>
-        <CardHeader>
-          {/* <CardTitle>Avatar</CardTitle>
-          <CardDescription>Avatar</CardDescription> */}
+        {/* <CardHeader>
+          <CardTitle>Avatar</CardTitle>
+          <CardDescription>Avatar</CardDescription>
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-        </CardHeader>
-        <CardContent className="grid gap-6">
+        </CardHeader> */}
+        <CardContent className="grid gap-6 mt-5">
           <div className="flex items-center justify-between space-x-2">
             <Label htmlFor="necessary" className="flex flex-col space-y-1">
               <span>Name</span>
@@ -65,6 +65,15 @@ export default function ProfileInfo(props: MainContentProps) {
               <span>Username</span>
               <span className="font-normal leading-snug text-muted-foreground">
                 {sessionData?.username}
+              </span>
+            </Label>
+            {/* <Switch id="performance" /> */}
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="performance" className="flex flex-col space-y-1">
+              <span>Referral Code</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                {sessionData?.referral}
               </span>
             </Label>
             {/* <Switch id="performance" /> */}

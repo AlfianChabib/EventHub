@@ -10,11 +10,11 @@ export default function page() {
 
   return (
     <section className="flex flex-col w-full">
-      {/* <Heading
+      <Heading
         title="Profile"
         description="EventHub is a platform to promote your events with ease"
         keywords="Event, Music, Concert, Seminar"
-      /> */}
+      />
       <Tabs
         defaultValue="profile"
         className="flex relative w-full with-navbar max-w-7xl gap-4"
